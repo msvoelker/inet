@@ -38,6 +38,7 @@ class INET_API InterpolatorBase : public IInterpolator<X, Y>
         ASSERT(x1 <= x2);
         return math::maxnan(y1, y2);
     }
+
 };
 
 template<typename X, typename Y>
@@ -49,6 +50,7 @@ class INET_API ConstantInterpolatorBase : public InterpolatorBase<X, Y>
         ASSERT(v1 == v2);
         return v1;
     }
+
 };
 
 /**
@@ -66,6 +68,7 @@ class INET_API EitherInterpolator : public ConstantInterpolatorBase<X, Y>
         ASSERT(y1 == y2);
         return y1;
     }
+
 };
 
 template<typename X, typename Y>
@@ -82,6 +85,7 @@ class INET_API LeftInterpolator : public ConstantInterpolatorBase<X, Y>
         ASSERT(x1 <= x && x <= x2);
         return y1;
     }
+
 };
 
 template<typename X, typename Y>
@@ -98,6 +102,7 @@ class INET_API RightInterpolator : public ConstantInterpolatorBase<X, Y>
         ASSERT(x1 <= x && x <= x2);
         return y2;
     }
+
 };
 
 template<typename X, typename Y>
@@ -114,6 +119,7 @@ class INET_API AverageInterpolator : public ConstantInterpolatorBase<X, Y>
         ASSERT(x1 <= x && x <= x2);
         return (y1 + y2) / 2;
     }
+
 };
 
 template<typename X, typename Y>
@@ -130,6 +136,7 @@ class INET_API MinimumInterpolator : public ConstantInterpolatorBase<X, Y>
         ASSERT(x1 <= x && x <= x2);
         return math::minnan(y1, y2);
     }
+
 };
 
 template<typename X, typename Y>
@@ -146,6 +153,7 @@ class INET_API MaximumInterpolator : public ConstantInterpolatorBase<X, Y>
         ASSERT(x1 <= x && x <= x2);
         return math::maxnan(y1, y2);
     }
+
 };
 
 template<typename X, typename Y>
@@ -167,6 +175,7 @@ class INET_API CloserInterpolator : public InterpolatorBase<X, Y>
         ASSERT(x1 <= x2);
         return (y1 + y2) / 2;
     }
+
 };
 
 template<typename X, typename Y>
@@ -195,6 +204,7 @@ class INET_API LinearInterpolator : public InterpolatorBase<X, Y>
         ASSERT(x1 <= x2);
         return (y1 + y2) / 2;
     }
+
 };
 
 template<typename X, typename Y>
@@ -227,6 +237,7 @@ class INET_API LineardbInterpolator : public InterpolatorBase<X, Y>
         auto y2dB = math::fraction2dB(y2);
         return math::dB2fraction((y1dB + y2dB) / 2);
     }
+
 };
 
 template<typename X, typename Y>

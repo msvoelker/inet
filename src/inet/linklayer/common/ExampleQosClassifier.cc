@@ -45,7 +45,7 @@ Define_Module(ExampleQosClassifier);
 
 void ExampleQosClassifier::initialize()
 {
-    //TODO parameters
+    // TODO parameters
 }
 
 void ExampleQosClassifier::handleMessage(cMessage *msg)

@@ -55,9 +55,9 @@ class INET_API Ipv4FragBuf
     //
     struct DatagramBuffer
     {
-        ReassemblyBuffer buf;    // reassembly buffer
-        Packet *packet = nullptr;          // the packet
-        simtime_t lastupdate;    // last time a new fragment arrived
+        ReassemblyBuffer buf; // reassembly buffer
+        Packet *packet = nullptr; // the packet
+        simtime_t lastupdate; // last time a new fragment arrived
     };
 
     // we use std::map for fast lookup by datagram Id

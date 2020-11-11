@@ -29,7 +29,7 @@
 #include "inet/networklayer/contract/ipv6/Ipv6Address.h"
 #include "inet/networklayer/ipv6tunneling/Ipv6Tunneling.h"
 #include "inet/networklayer/xmipv6/BindingUpdateList.h"
-#include "inet/networklayer/xmipv6/MobilityHeader_m.h"    // for HAOpt & RH2
+#include "inet/networklayer/xmipv6/MobilityHeader_m.h" // for HAOpt & RH2
 
 namespace inet {
 
@@ -94,20 +94,20 @@ class INET_API xMIPv6 : public cSimpleModule
     class TimerIfEntry
     {
       public:
-        cMessage *timer;    // pointer to the scheduled timer message
-        virtual ~TimerIfEntry() {};    // to make it a polymorphic base class
+        cMessage *timer; // pointer to the scheduled timer message
+        virtual ~TimerIfEntry() {} // to make it a polymorphic base class
 
-        Ipv6Address dest;    // the address (HA or CN(s) for which the message is sent
-        simtime_t ackTimeout;    // timeout for the Ack
-        simtime_t nextScheduledTime;    // time when the corrsponding message is supposed to be sent
-        NetworkInterface *ifEntry;    // interface from which the message will be transmitted
+        Ipv6Address dest; // the address (HA or CN(s) for which the message is sent
+        simtime_t ackTimeout; // timeout for the Ack
+        simtime_t nextScheduledTime; // time when the corrsponding message is supposed to be sent
+        NetworkInterface *ifEntry; // interface from which the message will be transmitted
     };
 
     struct Key
     {
-        int type;    // type of the message (BU, HoTI, CoTI) stored in the map, indexed by this key
-        int interfaceID;    // ID of the interface over which the message is sent
-        Ipv6Address dest;    // the address of either the HA or the CN
+        int type; // type of the message (BU, HoTI, CoTI) stored in the map, indexed by this key
+        int interfaceID; // ID of the interface over which the message is sent
+        Ipv6Address dest; // the address of either the HA or the CN
 
         Key(Ipv6Address _dest, int _interfaceID, int _type)
         {
@@ -123,6 +123,7 @@ class INET_API xMIPv6 : public cSimpleModule
             else
                 return type < b.type;
         }
+
     };
 
     typedef std::map<Key, TimerIfEntry *> TransmitIfList;
@@ -135,48 +136,48 @@ class INET_API xMIPv6 : public cSimpleModule
     // A vector that will contain and maintain a list of all the CN(s) that the MN is in communication with. Although this is a quick fix, but this list should be populated and depopulated in sync with the destination cache. Final version should rely on the destinaion cache for acquiring the CN(s) address for use in Correspodent Registeration
     typedef std::vector<Ipv6Address> CnList;
     CnList cnList;
-    CnList::iterator itCNList;    // declaring an iterator over the cnList vector
+    CnList::iterator itCNList; // declaring an iterator over the cnList vector
 
     /** Subclasses for the different timers */
     class BuTransmitIfEntry : public TimerIfEntry
     {
       public:
-        uint buSequenceNumber;    // sequence number of the BU sent
-        uint lifeTime;    // lifetime of the BU sent
-        //Time variable related to the time at which BU was sent
-        simtime_t presentSentTimeBU;    //stores the present time at which BU is/was sent
-        bool homeRegistration;    // indicates whether this goes to HA or CN;
+        uint buSequenceNumber; // sequence number of the BU sent
+        uint lifeTime; // lifetime of the BU sent
+        // Time variable related to the time at which BU was sent
+        simtime_t presentSentTimeBU; // stores the present time at which BU is/was sent
+        bool homeRegistration; // indicates whether this goes to HA or CN;
     };
 
     class TestInitTransmitIfEntry : public TimerIfEntry
     {
       public:
-        Ptr<MobilityHeader> testInitMsg;    // either the HoTI or CoTI
+        Ptr<MobilityHeader> testInitMsg; // either the HoTI or CoTI
     };
 
     class BrTransmitIfEntry : public TimerIfEntry
     {
       public:
-        uint retries;    // number of BRRs already sent
+        uint retries; // number of BRRs already sent
     };
 
     class BulExpiryIfEntry : public TimerIfEntry
     {
       public:
-        Ipv6Address CoA, HoA;    // the CoA and HoA of the MN that were used for this BUL entry
+        Ipv6Address CoA, HoA; // the CoA and HoA of the MN that were used for this BUL entry
     };
 
     class BcExpiryIfEntry : public TimerIfEntry
     {
       public:
-        Ipv6Address HoA;    // HoA of the MN
+        Ipv6Address HoA; // HoA of the MN
     };
 
     class TokenExpiryIfEntry : public TimerIfEntry
     {
       public:
-        Ipv6Address cnAddr;    // CN whose token is expiring
-        int tokenType;    // KEY_XX indicates whether it is a care-of token, etc.
+        Ipv6Address cnAddr; // CN whose token is expiring
+        int tokenType; // KEY_XX indicates whether it is a care-of token, etc.
     };
 
   protected:
@@ -239,8 +240,8 @@ class INET_API xMIPv6 : public cSimpleModule
      */
     void sendMobilityMessageToIPv6Module(Packet *msg, const Ipv6Address& destAddr,
             const Ipv6Address& srcAddr = Ipv6Address::UNSPECIFIED_ADDRESS, int interfaceId = -1,
-            simtime_t sendTime = 0);    // overloaded for use at CN - CB
-    //void sendMobilityMessageToIPv6Module(cMessage *msg, const Ipv6Address& destAddr, simtime_t sendTime = 0); // overloaded for use at CN - CB
+            simtime_t sendTime = 0); // overloaded for use at CN - CB
+//    void sendMobilityMessageToIPv6Module(cMessage *msg, const Ipv6Address& destAddr, simtime_t sendTime = 0); // overloaded for use at CN - CB
 
     /**
      * Process a BU - only applicable to HAs and CNs.
@@ -328,7 +329,7 @@ class INET_API xMIPv6 : public cSimpleModule
      * Similiar to the other resetTestInitIfEntry() method, but this one searches for the appropriate
      * transmission structure first as the interfaceID is not known but needed as lookup key.
      */
-    //void resetTestInitIfEntry(const Ipv6Address& dest, int msgType);
+//    void resetTestInitIfEntry(const Ipv6Address& dest, int msgType);
 
     /**
      * Reset the transmission structure for a BU and reschedule it for the provided time.

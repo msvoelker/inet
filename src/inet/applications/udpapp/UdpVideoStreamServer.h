@@ -40,12 +40,12 @@ class INET_API UdpVideoStreamServer : public ApplicationBase, public UdpSocket::
   public:
     struct VideoStreamData
     {
-        cMessage *timer = nullptr;    // self timer msg
-        L3Address clientAddr;    // client address
-        int clientPort = -1;    // client UDP port
-        long videoSize = 0;    // total size of video
-        long bytesLeft = 0;    // bytes left to transmit
-        long numPkSent = 0;    // number of packets sent
+        cMessage *timer = nullptr; // self timer msg
+        L3Address clientAddr; // client address
+        int clientPort = -1; // client UDP port
+        long videoSize = 0; // total size of video
+        long bytesLeft = 0; // bytes left to transmit
+        long numPkSent = 0; // number of packets sent
     };
 
   protected:
@@ -62,9 +62,9 @@ class INET_API UdpVideoStreamServer : public ApplicationBase, public UdpSocket::
     cPar *videoSize = nullptr;
 
     // statistics
-    unsigned int numStreams = 0;    // number of video streams served
-    unsigned long numPkSent = 0;    // total number of packets sent
-    static simsignal_t reqStreamBytesSignal;    // length of video streams served
+    unsigned int numStreams = 0; // number of video streams served
+    unsigned long numPkSent = 0; // total number of packets sent
+    static simsignal_t reqStreamBytesSignal; // length of video streams served
 
     virtual void processStreamRequest(Packet *msg);
     virtual void sendStreamData(cMessage *timer);

@@ -79,7 +79,7 @@ class INET_API LifecycleController
   protected:
     virtual bool resumeOperation(LifecycleOperation *operation);
     virtual void doOneStage(LifecycleOperation *operation, cModule *submodule);
-    virtual void moduleOperationStageCompleted(Callback *callback);    // invoked from the callback
+    virtual void moduleOperationStageCompleted(Callback *callback); // invoked from the callback
 
   public:
     LifecycleController() : spareCallback(nullptr) {}

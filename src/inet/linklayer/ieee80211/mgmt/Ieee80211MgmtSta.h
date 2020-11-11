@@ -40,15 +40,15 @@ class INET_API Ieee80211MgmtSta : public Ieee80211MgmtBase, protected cListener
     //
     struct ScanningInfo
     {
-        MacAddress bssid;    // specific BSSID to scan for, or the broadcast address
-        std::string ssid;    // SSID to scan for (empty=any)
-        bool activeScan;    // whether to perform active or passive scanning
-        simtime_t probeDelay;    // delay (in s) to be used prior to transmitting a Probe frame during active scanning
-        std::vector<int> channelList;    // list of channels to scan
-        int currentChannelIndex;    // index into channelList[]
-        bool busyChannelDetected;    // during minChannelTime, we have to listen for busy channel
-        simtime_t minChannelTime;    // minimum time to spend on each channel when scanning
-        simtime_t maxChannelTime;    // maximum time to spend on each channel when scanning
+        MacAddress bssid; // specific BSSID to scan for, or the broadcast address
+        std::string ssid; // SSID to scan for (empty=any)
+        bool activeScan; // whether to perform active or passive scanning
+        simtime_t probeDelay; // delay (in s) to be used prior to transmitting a Probe frame during active scanning
+        std::vector<int> channelList; // list of channels to scan
+        int currentChannelIndex; // index into channelList[]
+        bool busyChannelDetected; // during minChannelTime, we have to listen for busy channel
+        simtime_t minChannelTime; // minimum time to spend on each channel when scanning
+        simtime_t maxChannelTime; // maximum time to spend on each channel when scanning
     };
 
     //
@@ -57,15 +57,15 @@ class INET_API Ieee80211MgmtSta : public Ieee80211MgmtBase, protected cListener
     struct ApInfo : public cObject
     {
         int channel;
-        MacAddress address;    // alias bssid
+        MacAddress address; // alias bssid
         std::string ssid;
         Ieee80211SupportedRatesElement supportedRates;
         simtime_t beaconInterval;
         double rxPower;
 
         bool isAuthenticated;
-        int authSeqExpected;    // valid while authenticating; values: 1,3,5...
-        cMessage *authTimeoutMsg;    // if non-nullptr: authentication is in progress
+        int authSeqExpected; // valid while authenticating; values: 1,3,5...
+        cMessage *authTimeoutMsg; // if non-nullptr: authentication is in progress
 
         ApInfo()
         {
@@ -75,6 +75,7 @@ class INET_API Ieee80211MgmtSta : public Ieee80211MgmtBase, protected cListener
             isAuthenticated = false;
             authTimeoutMsg = nullptr;
         }
+
     };
 
     //
@@ -104,7 +105,7 @@ class INET_API Ieee80211MgmtSta : public Ieee80211MgmtBase, protected cListener
     AccessPointList apList;
 
     // associated Access Point
-    cMessage *assocTimeoutMsg;    // if non-nullptr: association is in progress
+    cMessage *assocTimeoutMsg; // if non-nullptr: association is in progress
     AssociatedApInfo assocAP;
 
   public:

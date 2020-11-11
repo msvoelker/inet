@@ -63,7 +63,7 @@ class INET_API VoipStreamReceiver : public cSimpleModule, public LifecycleUnsupp
     virtual void closeConnection();
     virtual void decodePacket(Packet *vp);
 
-    //UdpSocket::ICallback methods
+    // UdpSocket::ICallback methods
     virtual void socketDataArrived(UdpSocket *socket, Packet *packet) override;
     virtual void socketErrorArrived(UdpSocket *socket, Indication *indication) override;
     virtual void socketClosed(UdpSocket *socket) override {}

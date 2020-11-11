@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Authors: Veronika Rybova, Vladimir Vesely (ivesely@fit.vutbr.cz),
-//          Tamas Borbely (tomi@omnetpp.org)
+// Tamas Borbely (tomi@omnetpp.org)
 
 #include "inet/routing/pim/modes/PimBase.h"
 
@@ -126,7 +126,7 @@ void PimBase::sendHelloPacket(PimInterface *pimInterface)
     Packet *pk = new Packet("PimHello");
     const auto& msg = makeShared<PimHello>();
 
-    B byteLength = PIM_HEADER_LENGTH + B(6) + B(8);    // HoldTime + GenerationID option
+    B byteLength = PIM_HEADER_LENGTH + B(6) + B(8); // HoldTime + GenerationID option
 
     msg->setOptionsArraySize(designatedRouterPriority < 0 ? 2 : 3);
     HoldtimeOption *holdtimeOption = new HoldtimeOption();
@@ -247,5 +247,5 @@ std::ostream& operator<<(std::ostream& out, const PimBase::SourceAndGroup& sourc
     return out;
 }
 
-}    // namespace inet
+} // namespace inet
 

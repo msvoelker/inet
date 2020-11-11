@@ -95,7 +95,7 @@ class INET_API TcpNscConnection
 
   public:
     int connIdM = -1;
-    int forkedConnId = -1;    // identifies forked connection within the app (listener socket ID)
+    int forkedConnId = -1; // identifies forked connection within the app (listener socket ID)
     SockPair inetSockPairM;
     SockPair nscSockPairM;
     INetStreamSocket *pNscSocketM = nullptr;

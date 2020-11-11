@@ -113,10 +113,10 @@ class Ipv4OptionEnd extends Ipv4Option
 //
 class Ipv4OptionRecordRoute extends Ipv4Option
 {
-    // type = IPOPTION_RECORD_ROUTE;
+//    type = IPOPTION_RECORD_ROUTE;
     // type = IPOPTION_LOOSE_SOURCE_ROUTING
     // type = IPOPTION_STRICT_SOURCE_ROUTING
-    // length = 3 + 4 * getRecordAddressArraySize();
+//    length = 3 + 4 * getRecordAddressArraySize();
     short nextAddressIdx;
     // pointer = 4 + 4 * nextAddressIdx
     Ipv4Address recordAddress[];    // max size is 9
@@ -128,7 +128,7 @@ class Ipv4OptionRecordRoute extends Ipv4Option
 class Ipv4OptionTimestamp extends Ipv4Option
 {
     type = IPOPTION_TIMESTAMP;
-    // length = 4 + 4 * getRecordAddressArraySize() + 4 * getRecordTimestampArraySize();
+//    length = 4 + 4 * getRecordAddressArraySize() + 4 * getRecordTimestampArraySize();
     TimestampFlag flag;
     short overflow;
     short nextIdx;

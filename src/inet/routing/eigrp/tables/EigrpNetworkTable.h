@@ -40,8 +40,8 @@ class EigrpNetwork
     IPAddress mask;
 
   public:
-    EigrpNetwork(IPAddress &address, IPAddress &mask, int id) :
-            networkId(id), address(address), mask(mask) {}
+    EigrpNetwork(IPAddress& address, IPAddress& mask, int id) :
+        networkId(id), address(address), mask(mask) {}
 
     const IPAddress& getAddress() const {
         return address;
@@ -66,6 +66,7 @@ class EigrpNetwork
     void setNetworkId(int networkId) {
         this->networkId = networkId;
     }
+
 };
 
 /**
@@ -81,7 +82,7 @@ class EigrpNetworkTable : cObject
   public:
     static const int UNSPEC_NETID = 0;
 
-    EigrpNetworkTable() : networkCnt(1) { }
+    EigrpNetworkTable() : networkCnt(1) {}
     virtual ~EigrpNetworkTable();
 
     EigrpNetwork<IPAddress> *addNetwork(IPAddress& address, IPAddress& mask);
@@ -95,6 +96,7 @@ class EigrpNetworkTable : cObject
      */
     bool isInterfaceIncluded(const IPAddress& ifAddress, const IPAddress& ifMask, int *resultNetId);
 };
-} //eigrp
-} //inet
+} // eigrp
+} // inet
 #endif /* EIGRPNETWORKTABLE_H_ */
+

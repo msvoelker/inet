@@ -31,7 +31,7 @@ struct INET_API Ipv4MulticastSourceList
 {
     typedef std::vector<Ipv4Address> Ipv4AddressVector;
     McastSourceFilterMode filterMode;
-    Ipv4AddressVector sources;    // sorted
+    Ipv4AddressVector sources; // sorted
 
     Ipv4MulticastSourceList()
         : filterMode(MCAST_INCLUDE_SOURCES) {}
@@ -110,7 +110,7 @@ class INET_API Ipv4InterfaceData : public InterfaceProtocolData
 
     struct INET_API HostMulticastData
     {
-        HostMulticastGroupVector joinedMulticastGroups;    // multicast groups this interface joined
+        HostMulticastGroupVector joinedMulticastGroups; // multicast groups this interface joined
 
         virtual ~HostMulticastData();
         std::string str();
@@ -130,8 +130,8 @@ class INET_API Ipv4InterfaceData : public InterfaceProtocolData
 
     struct INET_API RouterMulticastData
     {
-        RouterMulticastGroupVector reportedMulticastGroups;    ///< multicast groups that have listeners on the link connected to this interface
-        int multicastTtlThreshold;    ///< multicast ttl threshold, used by multicast routers to limit multicast scope
+        RouterMulticastGroupVector reportedMulticastGroups; ///< multicast groups that have listeners on the link connected to this interface
+        int multicastTtlThreshold; ///< multicast ttl threshold, used by multicast routers to limit multicast scope
 
         RouterMulticastData() : multicastTtlThreshold(0) {}
         virtual ~RouterMulticastData();
@@ -139,9 +139,9 @@ class INET_API Ipv4InterfaceData : public InterfaceProtocolData
         std::string detailedInfo();
     };
 
-    Ipv4Address inetAddr;    ///< Ipv4 address of interface
-    Ipv4Address netmask;    ///< netmask
-    int metric;    ///< link "cost"; see e.g. MS KB article Q299540
+    Ipv4Address inetAddr; ///< Ipv4 address of interface
+    Ipv4Address netmask; ///< netmask
+    int metric; ///< link "cost"; see e.g. MS KB article Q299540
     HostMulticastData *hostData;
     RouterMulticastData *routerData;
 

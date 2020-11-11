@@ -48,11 +48,12 @@ class INET_API Ipv4NetworkConfigurator : public NetworkConfiguratorBase
         std::vector<Ipv4MulticastRoute *> staticMulticastRoutes;
 
       public:
-        Node(cModule *module) : NetworkConfiguratorBase::Node(module) { }
+        Node(cModule *module) : NetworkConfiguratorBase::Node(module) {}
         ~Node() {
             for (size_t i = 0; i < staticRoutes.size(); i++) delete staticRoutes[i];
             for (size_t i = 0; i < staticMulticastRoutes.size(); i++) delete staticMulticastRoutes[i];
         }
+
     };
 
     class Topology : public NetworkConfiguratorBase::Topology
@@ -67,10 +68,10 @@ class INET_API Ipv4NetworkConfigurator : public NetworkConfiguratorBase
     class InterfaceInfo : public NetworkConfiguratorBase::InterfaceInfo
     {
       public:
-        uint32_t address;    // the bits
-        uint32_t addressSpecifiedBits;    // 1 means the bit is specified, 0 means the bit is unspecified
-        uint32_t netmask;    // the bits
-        uint32_t netmaskSpecifiedBits;    // 1 means the bit is specified, 0 means the bit is unspecified
+        uint32_t address; // the bits
+        uint32_t addressSpecifiedBits; // 1 means the bit is specified, 0 means the bit is unspecified
+        uint32_t netmask; // the bits
+        uint32_t netmaskSpecifiedBits; // 1 means the bit is specified, 0 means the bit is unspecified
         std::vector<Ipv4Address> multicastGroups;
 
       public:
@@ -87,11 +88,11 @@ class INET_API Ipv4NetworkConfigurator : public NetworkConfiguratorBase
     class RouteInfo
     {
       public:
-        int color;    // an index into an array representing the different route actions (gateway, interface, metric, etc.)
-        bool enabled;    // allows turning of routes without removing them from the list
-        uint32_t destination;    // originally copied from the Ipv4Route
-        uint32_t netmask;    // originally copied from the Ipv4Route
-        std::vector<RouteInfo *> originalRouteInfos;    // routes that are routed by this one from the unoptimized original routing table, we keep track of this to be able to skip merge candidates with less computation
+        int color; // an index into an array representing the different route actions (gateway, interface, metric, etc.)
+        bool enabled; // allows turning of routes without removing them from the list
+        uint32_t destination; // originally copied from the Ipv4Route
+        uint32_t netmask; // originally copied from the Ipv4Route
+        std::vector<RouteInfo *> originalRouteInfos; // routes that are routed by this one from the unoptimized original routing table, we keep track of this to be able to skip merge candidates with less computation
 
       public:
         RouteInfo(int color, uint32_t destination, uint32_t netmask) { this->color = color; this->enabled = true; this->destination = destination; this->netmask = netmask; }
@@ -102,6 +103,7 @@ class INET_API Ipv4NetworkConfigurator : public NetworkConfiguratorBase
             out << "color = " << color << ", destination = " << Ipv4Address(destination) << ", netmask = " << Ipv4Address(netmask);
             return out.str();
         }
+
     };
 
     /**
@@ -110,7 +112,7 @@ class INET_API Ipv4NetworkConfigurator : public NetworkConfiguratorBase
     class RoutingTableInfo
     {
       public:
-        std::vector<RouteInfo *> routeInfos;    // list of routes in the routing table
+        std::vector<RouteInfo *> routeInfos; // list of routes in the routing table
 
       public:
         RoutingTableInfo() {}
@@ -243,8 +245,8 @@ class INET_API Ipv4NetworkConfigurator : public NetworkConfiguratorBase
 
     // helpers for address assignment
     static bool compareInterfaceInfos(InterfaceInfo *i, InterfaceInfo *j);
-    void collectCompatibleInterfaces(const std::vector<InterfaceInfo *>& interfaces,    /*in*/
-            std::vector<InterfaceInfo *>& compatibleInterfaces,    /*out, and the rest too*/
+    void collectCompatibleInterfaces(const std::vector<InterfaceInfo *>& interfaces, /*in*/
+            std::vector<InterfaceInfo *>& compatibleInterfaces, /*out, and the rest too*/
             uint32_t& mergedAddress, uint32_t& mergedAddressSpecifiedBits, uint32_t& mergedAddressIncompatibleBits,
             uint32_t& mergedNetmask, uint32_t& mergedNetmaskSpecifiedBits, uint32_t& mergedNetmaskIncompatibleBits);
 

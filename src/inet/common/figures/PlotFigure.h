@@ -69,7 +69,7 @@ class INET_API PlotFigure : public cGroupFigure, public inet::IIndicatorFigure
 
   public:
     PlotFigure(const char *name = nullptr);
-    virtual ~PlotFigure() {};
+    virtual ~PlotFigure() {}
 
     virtual void parse(cProperty *property) override;
     const char **getAllowedPropertyKeys() const override;
@@ -83,7 +83,7 @@ class INET_API PlotFigure : public cGroupFigure, public inet::IIndicatorFigure
     virtual void setValue(int series, double x, double y);
     virtual void clearValues(int series) { seriesValues[series].clear(); invalidPlot = true; }
 
-    //getters and setters
+    // getters and setters
     const Point getPlotSize() const { return backgroundFigure->getBounds().getSize(); }
     void setPlotSize(const Point& p);
 
@@ -123,14 +123,14 @@ class INET_API PlotFigure : public cGroupFigure, public inet::IIndicatorFigure
     void setXValueFormat(const char *format) { xValueFormat = format; }
     void setYValueFormat(const char *format) { yValueFormat = format; }
 
-    const char* getXAxisLabel() const { return xAxisLabelFigure->getText(); }
-    void setXAxisLabel(const char* text) { xAxisLabelFigure->setText(text); }
+    const char *getXAxisLabel() const { return xAxisLabelFigure->getText(); }
+    void setXAxisLabel(const char *text) { xAxisLabelFigure->setText(text); }
 
-    const char* getYAxisLabel() const { return yAxisLabelFigure->getText(); }
-    void setYAxisLabel(const char* text) { yAxisLabelFigure->setText(text); }
+    const char *getYAxisLabel() const { return yAxisLabelFigure->getText(); }
+    void setYAxisLabel(const char *text) { yAxisLabelFigure->setText(text); }
 
-    const char* getLabel() const { return labelFigure->getText(); }
-    void setLabel(const char* text) { labelFigure->setText(text); }
+    const char *getLabel() const { return labelFigure->getText(); }
+    void setLabel(const char *text) { labelFigure->setText(text); }
 
     int getLabelOffset() const;
     void setLabelOffset(int offset);

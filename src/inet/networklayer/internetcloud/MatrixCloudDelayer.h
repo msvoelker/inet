@@ -31,12 +31,12 @@ class PatternMatcher;
 class INET_API MatrixCloudDelayer : public CloudDelayerBase
 {
   protected:
-    //FIXME modified copy of 'Matcher' class from Ipv4NetworkConfigurator
+    // FIXME modified copy of 'Matcher' class from Ipv4NetworkConfigurator
     class Matcher
     {
       private:
         bool matchesany;
-        std::vector<inet::PatternMatcher *> matchers;    // TODO replace with a MatchExpression once it becomes available in OMNeT++
+        std::vector<inet::PatternMatcher *> matchers; // TODO replace with a MatchExpression once it becomes available in OMNeT++
 
       public:
         Matcher(const char *pattern);

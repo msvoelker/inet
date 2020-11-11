@@ -71,7 +71,7 @@ class INET_API NextHopForwarding : public OperationalBase, public NetfilterBase,
         L3Address remoteAddress;
 
         SocketDescriptor(int socketId, int protocolId, L3Address localAddress)
-                : socketId(socketId), protocolId(protocolId), localAddress(localAddress) { }
+            : socketId(socketId), protocolId(protocolId), localAddress(localAddress) {}
     };
 
     IInterfaceTable *interfaceTable;
@@ -82,7 +82,7 @@ class INET_API NextHopForwarding : public OperationalBase, public NetfilterBase,
     int defaultHopLimit;
 
     // working vars
-    std::set<const Protocol *> upperProtocols;    // where to send packets after decapsulation
+    std::set<const Protocol *> upperProtocols; // where to send packets after decapsulation
     std::map<int, SocketDescriptor *> socketIdToSocketDescriptor;
 
     // hooks

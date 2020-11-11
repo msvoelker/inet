@@ -54,7 +54,7 @@ enum Ipv6TlvOptionTypes
 class Ipv6HopByHopOptionsHeader extends Ipv6ExtensionHeader
 {
     extensionType = IP_PROT_IPv6EXT_HOP;
-    // byteLength = utils::roundUp(2 + tlvOptions.getLength(), 8);
+//    byteLength = utils::roundUp(2 + tlvOptions.getLength(), 8);
     TlvOptions tlvOptions;
 }
 

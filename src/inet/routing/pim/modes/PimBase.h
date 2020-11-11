@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Authors: Veronika Rybova, Vladimir Vesely (ivesely@fit.vutbr.cz),
-//          Tamas Borbely (tomi@omnetpp.org)
+// Tamas Borbely (tomi@omnetpp.org)
 
 #ifndef __INET_PIMBASE_H
 #define __INET_PIMBASE_H
@@ -65,11 +65,11 @@ class INET_API PimBase : public RoutingProtocolBase
         Ipv4Address source;
         Ipv4Address group;
         int flags;
-        AssertMetric metric;    // our metric of the unicast route to the source or RP(group)
+        AssertMetric metric; // our metric of the unicast route to the source or RP(group)
 
         RouteEntry(PimBase *owner, Ipv4Address source, Ipv4Address group)
             : owner(owner), source(source), group(group), flags(0) {}
-        virtual ~RouteEntry() {};
+        virtual ~RouteEntry() {}
 
         bool isFlagSet(int flag) const { return (flags & flag) != 0; }
         void setFlags(int flags) { this->flags |= flags; }
@@ -147,7 +147,7 @@ class INET_API PimBase : public RoutingProtocolBase
         SourceActiveTimer,
         StateRefreshTimer,
 
-        //PIM-SM specific timers
+        // PIM-SM specific timers
         KeepAliveTimer,
         RegisterStopTimer,
         ExpiryTimer,
@@ -198,7 +198,7 @@ class INET_API PimBase : public RoutingProtocolBase
     virtual void handleCrashOperation(LifecycleOperation *operation) override;
 };
 
-}    // namespace inet
+} // namespace inet
 
 #endif
 

@@ -67,7 +67,7 @@ class INET_API Igmpv2 : public cSimpleModule, public DefaultProtocolRegistration
         Igmpv2 *owner;
         Ipv4Address groupAddr;
         HostGroupState state;
-        bool flag;    // true when we were the last host to send a report for this group
+        bool flag; // true when we were the last host to send a report for this group
         cMessage *timer;
 
         HostGroupData(Igmpv2 *owner, const Ipv4Address& group);
@@ -82,7 +82,7 @@ class INET_API Igmpv2 : public cSimpleModule, public DefaultProtocolRegistration
         RouterGroupState state;
         cMessage *timer;
         cMessage *rexmtTimer;
-        //cMessage *v1HostTimer;
+//        cMessage *v1HostTimer;
 
         RouterGroupData(Igmpv2 *owner, const Ipv4Address& group);
         virtual ~RouterGroupData();
@@ -98,7 +98,7 @@ class INET_API Igmpv2 : public cSimpleModule, public DefaultProtocolRegistration
         virtual ~HostInterfaceData();
         friend inline std::ostream& operator<<(std::ostream& out, const Igmpv2::HostInterfaceData& entry)
         {
-            for(auto& g : entry.groups) {
+            for (auto& g : entry.groups) {
                 out << "(groupAddress: " << g.second->groupAddr << " ";
                 out << "hostGroupState: " << Igmpv2::getHostGroupStateString(g.second->state) << " ";
                 out << "groupTimer: " << g.second->timer->getArrivalTime() << " ";
@@ -122,10 +122,10 @@ class INET_API Igmpv2 : public cSimpleModule, public DefaultProtocolRegistration
         {
             out << "routerState: " << Igmpv2::getRouterStateString(entry.igmpRouterState) << " ";
             out << "queryTimer: " << entry.igmpQueryTimer->getArrivalTime() << " ";
-            if(entry.groups.empty())
+            if (entry.groups.empty())
                 out << "(empty)";
             else {
-                for(auto& g : entry.groups) {
+                for (auto& g : entry.groups) {
                     out << "(groupAddress: " << g.second->groupAddr << " ";
                     out << "routerGroupState: " << Igmpv2::getRouterGroupStateString(g.second->state) << " ";
                     out << "timer: " << g.second->timer->getArrivalTime() << " ";
@@ -152,22 +152,22 @@ class INET_API Igmpv2 : public cSimpleModule, public DefaultProtocolRegistration
     };
 
   protected:
-    IIpv4RoutingTable *rt;    // cached pointer
-    IInterfaceTable *ift;    // cached pointer
+    IIpv4RoutingTable *rt; // cached pointer
+    IInterfaceTable *ift; // cached pointer
 
     bool enabled;
     bool externalRouter;
-    int robustness;    // RFC 2236: Section 8.1
-    double queryInterval;    // RFC 2236: Section 8.2
-    double queryResponseInterval;    // RFC 2236: Section 8.3
-    double groupMembershipInterval;    // RFC 2236: Section 8.4
-    double otherQuerierPresentInterval;    // RFC 2236: Section 8.5
-    double startupQueryInterval;    // RFC 2236: Section 8.6
-    int startupQueryCount;    // RFC 2236: Section 8.7
-    double lastMemberQueryInterval;    // RFC 2236: Section 8.8
-    int lastMemberQueryCount;    // RFC 2236: Section 8.9
-    double unsolicitedReportInterval;    // RFC 2236: Section 8.10
-    //double version1RouterPresentInterval;  // RFC 2236: Section 8.11
+    int robustness; // RFC 2236: Section 8.1
+    double queryInterval; // RFC 2236: Section 8.2
+    double queryResponseInterval; // RFC 2236: Section 8.3
+    double groupMembershipInterval; // RFC 2236: Section 8.4
+    double otherQuerierPresentInterval; // RFC 2236: Section 8.5
+    double startupQueryInterval; // RFC 2236: Section 8.6
+    int startupQueryCount; // RFC 2236: Section 8.7
+    double lastMemberQueryInterval; // RFC 2236: Section 8.8
+    int lastMemberQueryCount; // RFC 2236: Section 8.9
+    double unsolicitedReportInterval; // RFC 2236: Section 8.10
+    // double version1RouterPresentInterval;  // RFC 2236: Section 8.11
 
     // group counters
     int numGroups = 0;
@@ -186,7 +186,7 @@ class INET_API Igmpv2 : public cSimpleModule, public DefaultProtocolRegistration
     int numLeavesSent = 0;
     int numLeavesRecv = 0;
 
-    //crcMode
+    // crcMode
     CrcMode crcMode = CRC_MODE_UNDEFINED;
 
     typedef std::map<int, HostInterfaceData *> InterfaceToHostDataMap;
@@ -231,7 +231,7 @@ class INET_API Igmpv2 : public cSimpleModule, public DefaultProtocolRegistration
     virtual void processIgmpMessage(Packet *packet);
     virtual void processQuery(NetworkInterface *ie, Packet *packet);
     virtual void processGroupQuery(NetworkInterface *ie, HostGroupData *group, simtime_t maxRespTime);
-    //virtual void processV1Report(NetworkInterface *ie, IgmpMessage *msg);
+//    virtual void processV1Report(NetworkInterface *ie, IgmpMessage *msg);
     virtual void processV2Report(NetworkInterface *ie, Packet *packet);
     virtual void processLeave(NetworkInterface *ie, Packet *packet);
 
@@ -258,7 +258,7 @@ class INET_API Igmpv2 : public cSimpleModule, public DefaultProtocolRegistration
     bool verifyCrc(const Packet *packet);
 };
 
-}    // namespace inet
+} // namespace inet
 
 #endif
 

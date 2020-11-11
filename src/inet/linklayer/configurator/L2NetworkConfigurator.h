@@ -34,7 +34,7 @@ namespace inet {
 class INET_API L2NetworkConfigurator : public cSimpleModule
 {
   public:
-    L2NetworkConfigurator() { }
+    L2NetworkConfigurator() {}
     typedef Ieee8021dInterfaceData::PortInfo PortInfo;
 
   protected:
@@ -75,7 +75,7 @@ class INET_API L2NetworkConfigurator : public cSimpleModule
     {
       protected:
         bool matchesany;
-        std::vector<inet::PatternMatcher *> matchers;    // TODO replace with a MatchExpression once it becomes available in OMNeT++
+        std::vector<inet::PatternMatcher *> matchers; // TODO replace with a MatchExpression once it becomes available in OMNeT++
 
       public:
         Matcher(const char *pattern);

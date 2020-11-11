@@ -15,7 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 //
 // Authors: Veronika Rybova, Vladimir Vesely (ivesely@fit.vutbr.cz),
-//          Tamas Borbely (tomi@omnetpp.org)
+// Tamas Borbely (tomi@omnetpp.org)
 
 #ifndef __INET_PIMSPLITTER_H
 #define __INET_PIMSPLITTER_H
@@ -54,7 +54,7 @@ class INET_API PimSplitter : public cSimpleModule
     virtual void processPIMPacket(Packet *pkt);
 };
 
-}    // namespace inet
+} // namespace inet
 
 #endif
 

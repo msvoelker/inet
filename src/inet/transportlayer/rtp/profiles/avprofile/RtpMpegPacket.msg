@@ -57,18 +57,18 @@ class RtpMpegHeader extends FieldsChunk
     uint8_t ffc = 0;	// forward_f_code
 
     // currenrtly unused fields:
-    //int mzb;
-    //int two;
-    //int temporalReference;
-    //int activeN;
-    //int newPictureHeader;
-    //int sequenceHeaderPresent;
-    //int beginningOfSlice;
-    //int endOfSlice;
-    //int fbv;
-    //int bfc;
-    //int ffv;
-    //int ffc;
+//    int mzb;
+//    int two;
+//    int temporalReference;
+//    int activeN;
+//    int newPictureHeader;
+//    int sequenceHeaderPresent;
+//    int beginningOfSlice;
+//    int endOfSlice;
+//    int fbv;
+//    int bfc;
+//    int ffv;
+//    int ffc;
 }
 
 

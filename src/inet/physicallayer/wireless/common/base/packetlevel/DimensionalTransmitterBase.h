@@ -32,7 +32,8 @@ class INET_API DimensionalTransmitterBase : public virtual IPrintableObject
 {
   protected:
     template<typename T>
-    class GainEntry {
+    class GainEntry
+    {
       public:
         const IInterpolator<T, double> *interpolator;
         const char where;
@@ -42,7 +43,7 @@ class INET_API DimensionalTransmitterBase : public virtual IPrintableObject
 
       public:
         GainEntry(const IInterpolator<T, double> *interpolator, const char where, double length, T offset, double gain) :
-            interpolator(interpolator), where(where), length(length), offset(offset), gain(gain) { }
+            interpolator(interpolator), where(where), length(length), offset(offset), gain(gain) {}
     };
 
   protected:

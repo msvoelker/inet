@@ -18,14 +18,14 @@
 #ifndef __INET_ENDIAN_H
 #define __INET_ENDIAN_H
 
-#include <stdint.h>    /* ISO C compliant platforms: Linux, Mac OS/X, recent MSVC versions */
+#include <stdint.h> /* ISO C compliant platforms: Linux, Mac OS/X, recent MSVC versions */
 
 #include "inet/common/INETDefs.h"
 
 //
 // Get endianness macros defined
 //
-#if defined(_WIN32)    /*MSVC and MinGW*/
+#if defined(_WIN32) /*MSVC and MinGW*/
 # include <winsock2.h>
 # include <ws2tcpip.h>
 # define LITTLE_ENDIAN    1
@@ -41,7 +41,7 @@
 #include <machine/endian.h>
 #include <netinet/in.h>
 #else /* fallback, including cases __FreeBSD__, __NetBSD__ and __OpenBSD__ */
-//XXX this causes problems in FreeBSD, and probably not needed anyway: #define __BSD_VISIBLE
+// XXX this causes problems in FreeBSD, and probably not needed anyway: #define __BSD_VISIBLE
 #include <machine/endian.h>
 
 #endif // if defined(_WIN32)

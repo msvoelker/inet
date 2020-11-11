@@ -55,18 +55,18 @@ class INET_API PimDm : public PimBase, protected cListener
 
         enum OriginatorState { NOT_ORIGINATOR, ORIGINATOR };
 
-        Ipv4Address nextHop;    // rpf neighbor
+        Ipv4Address nextHop; // rpf neighbor
 
         // graft prune state
         GraftPruneState graftPruneState;
-        cMessage *graftRetryTimer;    // scheduled in ACK_PENDING state for sending the next Graft message
-        cMessage *overrideTimer;      // when expires we are overriding a prune
-        simtime_t lastPruneSentTime;  // for rate limiting prune messages, 0 if no prune was sent
+        cMessage *graftRetryTimer; // scheduled in ACK_PENDING state for sending the next Graft message
+        cMessage *overrideTimer; // when expires we are overriding a prune
+        simtime_t lastPruneSentTime; // for rate limiting prune messages, 0 if no prune was sent
 
         // originator state
         OriginatorState originatorState;
-        cMessage *sourceActiveTimer;    // when expires we are going back to NOT_ORIGINATOR state
-        cMessage *stateRefreshTimer;    // scheduled in ORIGINATOR state for sending the next StateRefresh message
+        cMessage *sourceActiveTimer; // when expires we are going back to NOT_ORIGINATOR state
+        cMessage *stateRefreshTimer; // scheduled in ORIGINATOR state for sending the next StateRefresh message
         unsigned short maxTtlSeen;
 
         UpstreamInterface(Route *owner, NetworkInterface *ie, Ipv4Address neighbor, bool isSourceDirectlyConnected)
@@ -80,13 +80,13 @@ class INET_API PimDm : public PimBase, protected cListener
         int getInterfaceId() const { return ie->getInterfaceId(); }
         Ipv4Address rpfNeighbor() { return assertState == I_LOST_ASSERT ? winnerMetric.address : nextHop; }
         GraftPruneState getGraftPruneState() const { return graftPruneState; }
-        cMessage * getGraftRetryTimer() const { return graftRetryTimer; }
-        cMessage * getOverrideTimer() const { return overrideTimer; }
+        cMessage *getGraftRetryTimer() const { return graftRetryTimer; }
+        cMessage *getOverrideTimer() const { return overrideTimer; }
         simtime_t getLastPruneSentTime() const { return lastPruneSentTime; }
         bool isSourceDirectlyConnected() const { return isFlagSet(SOURCE_DIRECTLY_CONNECTED); }
         OriginatorState getOriginatorState() const { return originatorState; }
-        cMessage * getSourceActiveTimer() const { return sourceActiveTimer; }
-        cMessage * getStateRefreshTimer() const { return stateRefreshTimer; }
+        cMessage *getSourceActiveTimer() const { return sourceActiveTimer; }
+        cMessage *getStateRefreshTimer() const { return stateRefreshTimer; }
         unsigned short getMaxTtlSeen() const { return maxTtlSeen; }
 
         void startGraftRetryTimer();
@@ -112,8 +112,8 @@ class INET_API PimDm : public PimBase, protected cListener
 
         // prune state
         PruneState pruneState;
-        cMessage *pruneTimer;         // scheduled when entering into PRUNED state, when expires the interface goes to NO_INFO (forwarding) state
-        cMessage *prunePendingTimer;  // scheduled when a Prune is received, when expires the interface goes to PRUNED state
+        cMessage *pruneTimer; // scheduled when entering into PRUNED state, when expires the interface goes to NO_INFO (forwarding) state
+        cMessage *prunePendingTimer; // scheduled when a Prune is received, when expires the interface goes to PRUNED state
 
         DownstreamInterface(Route *owner, NetworkInterface *ie)
             : Interface(owner, ie),
@@ -123,8 +123,8 @@ class INET_API PimDm : public PimBase, protected cListener
         Route *route() const { return check_and_cast<Route *>(owner); }
         PimDm *pimdm() const { return check_and_cast<PimDm *>(owner->owner); }
         PruneState getPruneState() { return pruneState; }
-        cMessage * getPruneTimer() const { return pruneTimer; }
-        cMessage * getPrunePendingTimer() const { return prunePendingTimer; }
+        cMessage *getPruneTimer() const { return pruneTimer; }
+        cMessage *getPrunePendingTimer() const { return prunePendingTimer; }
         bool hasConnectedReceivers() const { return isFlagSet(HAS_CONNECTED_RECEIVERS); }
         void setHasConnectedReceivers(bool value) { setFlag(HAS_CONNECTED_RECEIVERS, value); }
         bool isInOlist() const;
@@ -260,7 +260,7 @@ class INET_API PimDm : public PimBase, protected cListener
     virtual void stopPIMRouting();
 };
 
-}    // namespace inet
+} // namespace inet
 
 #endif
 

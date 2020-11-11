@@ -29,16 +29,16 @@ namespace inet {
 struct nat_message
 {
 
-    uint16_t      multi;
-    uint16_t      reserved = 0;
-    uint16_t      peer1;
-    uint16_t      peer2;
-    uint16_t      portPeer1;
-    uint16_t      portPeer2;
-    uint16_t      numAddrPeer1;
-    uint16_t      numAddrPeer2;
-    uint32_t    peer1Addresses[0];
-    uint32_t    peer2Addresses[0];
+    uint16_t multi;
+    uint16_t reserved = 0;
+    uint16_t peer1;
+    uint16_t peer2;
+    uint16_t portPeer1;
+    uint16_t portPeer2;
+    uint16_t numAddrPeer1;
+    uint16_t numAddrPeer2;
+    uint32_t peer1Addresses[0];
+    uint32_t peer2Addresses[0];
 };
 
 /**
@@ -49,7 +49,7 @@ struct nat_message
 class INET_API SctpNatPeer : public cSimpleModule, public SctpSocket::ICallback, public LifecycleUnsupported
 {
   protected:
-    //SctpAssociation* assoc;
+//    SctpAssociation* assoc;
     int32_t notifications;
     int32_t serverAssocId;
     SctpSocket clientSocket;
@@ -59,12 +59,12 @@ class INET_API SctpNatPeer : public cSimpleModule, public SctpSocket::ICallback,
     bool echo;
     bool schedule;
     bool shutdownReceived;
-    //long bytesRcvd;
+//    long bytesRcvd;
     int64_t bytesSent;
     int32_t packetsSent;
     int32_t packetsRcvd;
     int32_t numSessions;
-    int32_t numRequestsToSend;    // requests to send in this session
+    int32_t numRequestsToSend; // requests to send in this session
     bool ordered;
     int32_t queueSize;
     cMessage *timeoutMsg;
@@ -82,7 +82,7 @@ class INET_API SctpNatPeer : public cSimpleModule, public SctpSocket::ICallback,
     int32_t peerPort;
     AddressVector peerAddressList;
     AddressVector localAddressList;
-    //cOutVector* rcvdBytes;
+//    cOutVector* rcvdBytes;
     typedef std::map<int32_t, int64_t> RcvdPacketsPerAssoc;
     RcvdPacketsPerAssoc rcvdPacketsPerAssoc;
     typedef std::map<int32_t, int64_t> SentPacketsPerAssoc;
@@ -115,7 +115,7 @@ class INET_API SctpNatPeer : public cSimpleModule, public SctpSocket::ICallback,
     void finish() override;
     void handleTimer(cMessage *msg);
     /*void setAssociation(SctpAssociation *_assoc) {
-       assoc = _assoc;};*/
+       assoc = _assoc; };*/
     void generateAndSend();
     void connect(L3Address connectAddress, int32_t connectPort);
     void connectx(AddressVector connectAddressList, int32_t connectPort);
@@ -145,7 +145,7 @@ class INET_API SctpNatPeer : public cSimpleModule, public SctpSocket::ICallback,
     void socketStatusArrived(SctpSocket *socket, SctpStatusReq *status) override;
     //@}
     void msgAbandonedArrived(SctpSocket *socket) override;
-    //void setAssociation(SctpAssociation *_assoc) {assoc = _assoc;};
+    // void setAssociation(SctpAssociation *_assoc) {assoc = _assoc; }
 
     void setPrimaryPath();
     void sendStreamResetNotification();

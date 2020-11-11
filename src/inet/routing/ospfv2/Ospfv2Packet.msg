@@ -150,7 +150,7 @@ class Ospfv2Link extends cObject
 //
 class Ospfv2RouterLsa extends Ospfv2Lsa
 {
-    // header.lsType = ROUTERLSA_TYPE;
+//    header.lsType = ROUTERLSA_TYPE;
     unsigned short reserved1 = 0;   // 5 bit
     bool V_VirtualLinkEndpoint = false;
     bool E_ASBoundaryRouter = false;
@@ -165,7 +165,7 @@ class Ospfv2RouterLsa extends Ospfv2Lsa
 //
 class Ospfv2NetworkLsa extends Ospfv2Lsa
 {
-    // header.lsType = NETWORKLSA_TYPE;
+//    header.lsType = NETWORKLSA_TYPE;
     Ipv4Address networkMask;
     Ipv4Address attachedRouters[];
 }
@@ -175,7 +175,7 @@ class Ospfv2NetworkLsa extends Ospfv2Lsa
 //
 class Ospfv2SummaryLsa extends Ospfv2Lsa
 {
-    // header.lsType = SUMMARYLSA_NETWORKS_TYPE;
+//    header.lsType = SUMMARYLSA_NETWORKS_TYPE;
     Ipv4Address networkMask;
     unsigned long routeCost = 1;
     Ospfv2TosData tosData[];  // 1 element required, count of tosData not stored, calculate it from length of LSA
@@ -205,7 +205,7 @@ class Ospfv2AsExternalLsaContents extends cObject
 //
 class Ospfv2AsExternalLsa extends Ospfv2Lsa
 {
-    // header.lsType = AS_EXTERNAL_LSA_TYPE;
+//    header.lsType = AS_EXTERNAL_LSA_TYPE;
     Ospfv2AsExternalLsaContents contents;
 }
 

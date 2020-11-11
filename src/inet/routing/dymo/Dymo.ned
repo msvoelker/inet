@@ -41,7 +41,7 @@ simple Dymo like IManetRouting
         // 1. Dymo parameter group
         string clientAddresses = default("10.10.0.0/24 10.20.0.0"); // CLIENT_ADDRESSES
         bool useMulticastRREP = default(false); // USE_MULTICAST_RREP
-        // string DEFAULT_METRIC_TYPE = default("HOP_COUNT");
+//        string DEFAULT_METRIC_TYPE = default("HOP_COUNT");
         string interfaces = default("*"); // AODVv2_INTERFACES
 
         // 2. Dymo parameter group
@@ -49,15 +49,15 @@ simple Dymo like IManetRouting
         double maxIdleTime @unit(s) = default(200s); // MAX_IDLETIME
         double maxSequenceNumberLifetime @unit(s) = default(300s); // MAX_SEQNUM_LIFETIME
         double routeRREQWaitTime @unit(s) = default(2s); // ROUTE_RREQ_WAIT_TIME
-        // double UNICAST_MESSAGE_SENT_TIMEOUT @unit(s) = default(1s);
+//        double UNICAST_MESSAGE_SENT_TIMEOUT @unit(s) = default(1s);
         double rreqHolddownTime @unit(s) = default(10s); // RREQ_HOLDDOWN_TIME
 
         // 3. Dymo parameter group
         int maxHopCount = default(20); // MAX_HOPCOUNT
-        // string MAX_METRIC = default("");
-        // double MAXTIME;
+//        string MAX_METRIC = default("");
+//        double MAXTIME;
         int discoveryAttemptsMax = default(3); // DISCOVERY_ATTEMPTS_MAX
-        // int MTU;
+//        int MTU;
 
         // 4. Dymo parameter group
         bool appendInformation = default(true); //APPEND_INFORMATION;

@@ -37,8 +37,8 @@ class InterfaceToken;
 class INET_API MacAddress
 {
   private:
-    uint64_t address;    // 6*8=48 bit address, lowest 6 bytes are used, highest 2 bytes are always zero
-    static unsigned int autoAddressCtr;    // global counter for generateAutoAddress()
+    uint64_t address; // 6*8=48 bit address, lowest 6 bytes are used, highest 2 bytes are always zero
+    static unsigned int autoAddressCtr; // global counter for generateAutoAddress()
     static bool simulationLifecycleListenerAdded;
 
   public:
@@ -150,12 +150,12 @@ class INET_API MacAddress
     /**
      * Returns true if this is a multicast logical address (first byte's lsb is 1).
      */
-    bool isMulticast() const  { return getAddressByte(0) & 0x01; };
+    bool isMulticast() const { return getAddressByte(0) & 0x01; };
 
     /**
      * Returns true if this is a local address (first byte's second less significant bit is 1).
      */
-    bool isLocal() const  { return getAddressByte(0) & 0x02; };
+    bool isLocal() const { return getAddressByte(0) & 0x02; };
 
     /**
      * Returns true if all address bytes are zero.

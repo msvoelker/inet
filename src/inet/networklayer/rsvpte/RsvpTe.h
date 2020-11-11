@@ -85,7 +85,7 @@ class INET_API RsvpTe : public RoutingProtocolBase, public IScriptable
         Ipv4Address Previous_Hop_Address;
 
         // Logical Interface Handle from PHOP object
-        //Ipv4Address LIH;
+//        Ipv4Address LIH;
 
         // List of outgoing Interfaces for this (sender, destination) single entry for unicast case
         Ipv4Address OutInterface;
@@ -129,8 +129,8 @@ class INET_API RsvpTe : public RoutingProtocolBase, public IScriptable
         // input labels we have currently installed in the database
         std::vector<int> inLabelVector;
 
-        //we always use shared explicit
-        //int style;
+//        int style;
+        // we always use shared explicit
 
         // FLOWSPEC structure
         FlowSpecObj Flowspec_Object;

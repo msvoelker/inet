@@ -51,8 +51,8 @@ class INET_API NetworkConfiguratorBase : public cSimpleModule, public L3AddressR
         std::vector<InterfaceInfo *> interfaceInfos;
 
       public:
-        Node(cModule *module) : inet::Topology::Node(module->getId()), module(module) { }
-        virtual ~Node() { for (auto & interfaceInfo : interfaceInfos) delete interfaceInfo; }
+        Node(cModule *module) : inet::Topology::Node(module->getId()), module(module) {}
+        virtual ~Node() { for (auto& interfaceInfo : interfaceInfos) delete interfaceInfo; }
     };
 
     /**
@@ -65,7 +65,7 @@ class INET_API NetworkConfiguratorBase : public cSimpleModule, public L3AddressR
         InterfaceInfo *destinationInterfaceInfo = nullptr;
 
       public:
-        Link() { }
+        Link() {}
     };
 
     /**
@@ -79,10 +79,10 @@ class INET_API NetworkConfiguratorBase : public cSimpleModule, public L3AddressR
         NetworkInterface *networkInterface = nullptr;
         int mtu = 0;
         double metric = NaN;
-        bool configure = false;    // false means the IP address of the interface will not be modified
-        bool addStaticRoute = false;    // add-static-route attribute
-        bool addDefaultRoute = false;    // add-default-route attribute
-        bool addSubnetRoute = false;    // add-subnet-route attribute
+        bool configure = false; // false means the IP address of the interface will not be modified
+        bool addStaticRoute = false; // add-static-route attribute
+        bool addDefaultRoute = false; // add-default-route attribute
+        bool addSubnetRoute = false; // add-subnet-route attribute
 
       public:
         InterfaceInfo(Node *node, LinkInfo *linkInfo, NetworkInterface *networkInterface);
@@ -97,12 +97,12 @@ class INET_API NetworkConfiguratorBase : public cSimpleModule, public L3AddressR
     class LinkInfo : public cObject
     {
       public:
-        std::vector<InterfaceInfo *> interfaceInfos;    // interfaces on that LAN or point-to-point link
-        InterfaceInfo *gatewayInterfaceInfo = nullptr;    // non-NULL if all hosts have 1 non-loopback interface except one host that has two of them (this will be the gateway)
+        std::vector<InterfaceInfo *> interfaceInfos; // interfaces on that LAN or point-to-point link
+        InterfaceInfo *gatewayInterfaceInfo = nullptr; // non-NULL if all hosts have 1 non-loopback interface except one host that has two of them (this will be the gateway)
         int networkId = 0;
 
       public:
-        LinkInfo() { }
+        LinkInfo() {}
     };
 
     /**
@@ -111,11 +111,11 @@ class INET_API NetworkConfiguratorBase : public cSimpleModule, public L3AddressR
     class Topology : public inet::Topology
     {
       public:
-        std::vector<LinkInfo *> linkInfos;    // all links in the network
-        std::map<int, InterfaceInfo *> interfaceInfos;    // all interfaces in the network
+        std::vector<LinkInfo *> linkInfos; // all links in the network
+        std::map<int, InterfaceInfo *> interfaceInfos; // all interfaces in the network
 
       public:
-        virtual ~Topology() { for (auto & linkInfo : linkInfos) delete linkInfo; }
+        virtual ~Topology() { for (auto& linkInfo : linkInfos) delete linkInfo; }
 
       protected:
         virtual Node *createNode(cModule *module) override { return new NetworkConfiguratorBase::Node(module); }
@@ -126,7 +126,7 @@ class INET_API NetworkConfiguratorBase : public cSimpleModule, public L3AddressR
     {
       protected:
         bool matchesany = false;
-        std::vector<inet::PatternMatcher *> matchers;    // TODO replace with a MatchExpression once it becomes available in OMNeT++
+        std::vector<inet::PatternMatcher *> matchers; // TODO replace with a MatchExpression once it becomes available in OMNeT++
 
       public:
         Matcher(const char *pattern);

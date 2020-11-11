@@ -70,7 +70,7 @@ class INET_API SctpPeer : public cSimpleModule, public SctpSocket::ICallback, pu
     bool shutdownReceived;
     bool sendAllowed;
     int serverAssocId;
-    int numRequestsToSend;    // requests to send in this session
+    int numRequestsToSend; // requests to send in this session
     int lastStream;
     int numPacketsToReceive;
 

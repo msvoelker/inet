@@ -22,7 +22,7 @@
 //
 // Get endianness macros defined
 //
-#if defined(_WIN32)    /*MSVC and MinGW*/
+#if defined(_WIN32) /*MSVC and MinGW*/
 # define LITTLE_ENDIAN    1
 # define BIG_ENDIAN       2
 # define BYTE_ORDER       LITTLE_ENDIAN   /* XXX at least on x86 */
@@ -34,7 +34,7 @@
 #elif defined(__APPLE__)
 #include <machine/endian.h>
 #else /* fallback, including cases __FreeBSD__, __NetBSD__ and __OpenBSD__ */
-//XXX this causes problems in FreeBSD, and probably not needed anyway: #define __BSD_VISIBLE
+// XXX this causes problems in FreeBSD, and probably not needed anyway: #define __BSD_VISIBLE
 #include <machine/endian.h>
 #endif // if defined(_WIN32)
 

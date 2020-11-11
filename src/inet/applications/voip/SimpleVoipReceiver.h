@@ -81,7 +81,7 @@ class INET_API SimpleVoipReceiver : public cSimpleModule, public LifecycleUnsupp
     int emodelBpl = -1;
     int emodelA = -1;
     simtime_t playoutDelay;
-    simtime_t mosSpareTime;    // spare time before calculating MOS (after calculated playout time of last packet)
+    simtime_t mosSpareTime; // spare time before calculating MOS (after calculated playout time of last packet)
 
     // state
     UdpSocket socket;
@@ -105,7 +105,7 @@ class INET_API SimpleVoipReceiver : public cSimpleModule, public LifecycleUnsupp
     void handleMessage(cMessage *msg) override;
     virtual void finish() override;
 
-    //UdpSocket::ICallback methods
+    // UdpSocket::ICallback methods
     virtual void socketDataArrived(UdpSocket *socket, Packet *packet) override;
     virtual void socketErrorArrived(UdpSocket *socket, Indication *indication) override;
     virtual void socketClosed(UdpSocket *socket) override {}

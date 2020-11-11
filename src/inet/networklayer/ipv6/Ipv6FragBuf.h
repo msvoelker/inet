@@ -57,9 +57,9 @@ class INET_API Ipv6FragBuf
     //
     struct DatagramBuffer
     {
-        ReassemblyBuffer buf;    // reassembly buffer
-        Packet *packet = nullptr;    // the actual datagram
-        simtime_t createdAt;    // time of the buffer creation (i.e. reception time of first-arriving fragment)
+        ReassemblyBuffer buf; // reassembly buffer
+        Packet *packet = nullptr; // the actual datagram
+        simtime_t createdAt; // time of the buffer creation (i.e. reception time of first-arriving fragment)
     };
 
     // we use std::map for fast lookup by datagram Id
