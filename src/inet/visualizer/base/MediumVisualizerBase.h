@@ -25,10 +25,10 @@
 #include "inet/visualizer/util/NetworkNodeFilter.h"
 #include "inet/visualizer/util/Placement.h"
 
-#ifdef WITH_RADIO
+#ifdef INET_WITH_RADIO
 #include "inet/physicallayer/wireless/common/contract/packetlevel/IRadioMedium.h"
 #include "inet/physicallayer/wireless/common/signal/PowerFunctions.h"
-#endif // WITH_RADIO
+#endif // INET_WITH_RADIO
 
 namespace inet {
 
@@ -36,7 +36,7 @@ namespace visualizer {
 
 class INET_API MediumVisualizerBase : public VisualizerBase, public cListener
 {
-#ifdef WITH_RADIO
+#ifdef INET_WITH_RADIO
   protected:
     enum SignalShape
     {
@@ -163,7 +163,7 @@ class INET_API MediumVisualizerBase : public VisualizerBase, public cListener
 
   public:
     virtual void receiveSignal(cComponent *source, simsignal_t signal, cObject *object, cObject *details) override;
-#endif // WITH_RADIO
+#endif // INET_WITH_RADIO
 };
 
 } // namespace visualizer

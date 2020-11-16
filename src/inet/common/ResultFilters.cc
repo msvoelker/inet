@@ -72,12 +72,12 @@ Register_ResultFilter("receptionMinSignalPower", ReceptionMinSignalPowerFilter);
 
 void ReceptionMinSignalPowerFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details)
 {
-#ifdef WITH_RADIO
+#ifdef INET_WITH_RADIO
     if (auto reception = dynamic_cast<inet::physicallayer::FlatReceptionBase *>(object)) {
         W minReceptionPower = reception->computeMinPower(reception->getStartTime(), reception->getEndTime());
         fire(this, t, minReceptionPower.get(), details);
     }
-#endif  // WITH_RADIO
+#endif  // INET_WITH_RADIO
 }
 
 Register_ResultFilter("appPkSeqNo", ApplicationPacketSequenceNumberFilter);
@@ -310,13 +310,13 @@ Register_ResultFilter("minimumSnir", MinimumSnirFromSnirIndFilter);
 
 void MinimumSnirFromSnirIndFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details)
 {
-#ifdef WITH_RADIO
+#ifdef INET_WITH_RADIO
     if (auto pk = dynamic_cast<Packet *>(object)) {
         const auto& tag = pk->findTag<SnirInd>();
         if (tag)
             fire(this, t, tag->getMinimumSnir(), details);
     }
-#endif  // WITH_RADIO
+#endif  // INET_WITH_RADIO
 }
 
 
@@ -324,13 +324,13 @@ Register_ResultFilter("packetErrorRate", PacketErrorRateFromErrorRateIndFilter);
 
 void PacketErrorRateFromErrorRateIndFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details)
 {
-#ifdef WITH_RADIO
+#ifdef INET_WITH_RADIO
     if (auto pk = dynamic_cast<Packet *>(object)) {
         const auto& tag = pk->findTag<ErrorRateInd>();
         if (tag)
             fire(this, t, tag->getPacketErrorRate(), details);  //TODO isNaN?
     }
-#endif  // WITH_RADIO
+#endif  // INET_WITH_RADIO
 }
 
 
@@ -338,13 +338,13 @@ Register_ResultFilter("bitErrorRate", BitErrorRateFromErrorRateIndFilter);
 
 void BitErrorRateFromErrorRateIndFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details)
 {
-#ifdef WITH_RADIO
+#ifdef INET_WITH_RADIO
     if (auto pk = dynamic_cast<Packet *>(object)) {
         const auto& tag = pk->findTag<ErrorRateInd>();
         if (tag)
             fire(this, t, tag->getBitErrorRate(), details);  //TODO isNaN?
     }
-#endif  // WITH_RADIO
+#endif  // INET_WITH_RADIO
 }
 
 
@@ -352,13 +352,13 @@ Register_ResultFilter("symbolErrorRate", SymbolErrorRateFromErrorRateIndFilter);
 
 void SymbolErrorRateFromErrorRateIndFilter::receiveSignal(cResultFilter *prev, simtime_t_cref t, cObject *object, cObject *details)
 {
-#ifdef WITH_RADIO
+#ifdef INET_WITH_RADIO
     if (auto pk = dynamic_cast<Packet *>(object)) {
         const auto& tag = pk->findTag<ErrorRateInd>();
         if (tag)
             fire(this, t, tag->getSymbolErrorRate(), details);  //TODO isNaN?
     }
-#endif  // WITH_RADIO
+#endif  // INET_WITH_RADIO
 }
 
 Register_ResultFilter("localSignal", LocalSignalFilter);

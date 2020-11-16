@@ -28,11 +28,11 @@
 #include "inet/visualizer/scene/NetworkNodeCanvasVisualizer.h"
 #include "inet/visualizer/util/AnimationSpeedInterpolator.h"
 
-#ifdef WITH_RADIO
+#ifdef INET_WITH_RADIO
 #include "inet/physicallayer/wireless/common/contract/packetlevel/IReceptionDecision.h"
 #include "inet/physicallayer/wireless/common/contract/packetlevel/ITransmission.h"
 #include "inet/physicallayer/wireless/common/contract/packetlevel/IWirelessSignal.h"
-#endif // WITH_RADIO
+#endif // INET_WITH_RADIO
 
 namespace inet {
 
@@ -40,7 +40,7 @@ namespace visualizer {
 
 class INET_API MediumCanvasVisualizer : public MediumVisualizerBase
 {
-#ifdef WITH_RADIO
+#ifdef INET_WITH_RADIO
   protected:
     /** @name Parameters */
     //@{
@@ -159,7 +159,7 @@ class INET_API MediumCanvasVisualizer : public MediumVisualizerBase
     virtual void handleSignalArrivalEnded(const physicallayer::IReception *reception) override;
 
     virtual void receiveSignal(cComponent *source, simsignal_t signal, cObject *object, cObject *details) override;
-#endif // WITH_RADIO
+#endif // INET_WITH_RADIO
 };
 
 } // namespace visualizer

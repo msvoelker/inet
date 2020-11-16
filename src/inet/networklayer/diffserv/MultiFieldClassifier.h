@@ -22,11 +22,11 @@
 #include "inet/common/packet/dissector/PacketDissector.h"
 #include "inet/queueing/base/PacketClassifierBase.h"
 
-#ifdef WITH_IPv4
+#ifdef INET_WITH_IPv4
 #include "inet/networklayer/ipv4/Ipv4Header_m.h"
 #endif
 
-#ifdef WITH_IPv6
+#ifdef INET_WITH_IPv6
 #include "inet/networklayer/ipv6/Ipv6Header.h"
 #endif
 

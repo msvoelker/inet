@@ -32,16 +32,16 @@
 #include "inet/networklayer/common/NextHopAddressTag_m.h"
 #include "inet/networklayer/contract/IInterfaceTable.h"
 
-#ifdef WITH_IPv4
+#ifdef INET_WITH_IPv4
 #include "inet/networklayer/ipv4/Ipv4Header_m.h"
 #endif
 
-#ifdef WITH_IPv6
+#ifdef INET_WITH_IPv6
 #include "inet/networklayer/ipv6/Ipv6ExtensionHeaders_m.h"
 #include "inet/networklayer/ipv6/Ipv6InterfaceData.h"
 #endif
 
-#ifdef WITH_NEXTHOP
+#ifdef INET_WITH_NEXTHOP
 #include "inet/networklayer/nexthop/NextHopForwardingHeader_m.h"
 #endif
 
@@ -382,7 +382,7 @@ L3Address Gpsr::getSelfAddress() const
 {
     //TODO choose self address based on a new 'interfaces' parameter
     L3Address ret = routingTable->getRouterIdAsGeneric();
-#ifdef WITH_IPv6
+#ifdef INET_WITH_IPv6
     if (ret.getType() == L3Address::IPv6) {
         for (int i = 0; i < interfaceTable->getNumInterfaces(); i++) {
             NetworkInterface *ie = interfaceTable->getInterface(i);
@@ -614,7 +614,7 @@ INetfilter::IHook::Result Gpsr::routeDatagram(Packet *datagram, GpsrOption *gpsr
 void Gpsr::setGpsrOptionOnNetworkDatagram(Packet *packet, const Ptr<const NetworkHeaderBase>& networkHeader, GpsrOption *gpsrOption)
 {
     packet->trimFront();
-#ifdef WITH_IPv4
+#ifdef INET_WITH_IPv4
     if (dynamicPtrCast<const Ipv4Header>(networkHeader)) {
         auto ipv4Header = removeNetworkProtocolHeader<Ipv4Header>(packet);
         gpsrOption->setType(IPOPTION_TLV_GPSR);
@@ -629,7 +629,7 @@ void Gpsr::setGpsrOptionOnNetworkDatagram(Packet *packet, const Ptr<const Networ
     }
     else
 #endif
-#ifdef WITH_IPv6
+#ifdef INET_WITH_IPv6
     if (dynamicPtrCast<const Ipv6Header>(networkHeader)) {
         auto ipv6Header = removeNetworkProtocolHeader<Ipv6Header>(packet);
         gpsrOption->setType(IPv6TLVOPTION_TLV_GPSR);
@@ -648,7 +648,7 @@ void Gpsr::setGpsrOptionOnNetworkDatagram(Packet *packet, const Ptr<const Networ
     }
     else
 #endif
-#ifdef WITH_NEXTHOP
+#ifdef INET_WITH_NEXTHOP
     if (dynamicPtrCast<const NextHopForwardingHeader>(networkHeader)) {
         auto nextHopHeader = removeNetworkProtocolHeader<NextHopForwardingHeader>(packet);
         gpsrOption->setType(NEXTHOP_TLVOPTION_TLV_GPSR);
@@ -668,13 +668,13 @@ const GpsrOption *Gpsr::findGpsrOptionInNetworkDatagram(const Ptr<const NetworkH
 {
     const GpsrOption *gpsrOption = nullptr;
 
-#ifdef WITH_IPv4
+#ifdef INET_WITH_IPv4
     if (auto ipv4Header = dynamicPtrCast<const Ipv4Header>(networkHeader)) {
         gpsrOption = check_and_cast_nullable<const GpsrOption *>(ipv4Header->findOptionByType(IPOPTION_TLV_GPSR));
     }
     else
 #endif
-#ifdef WITH_IPv6
+#ifdef INET_WITH_IPv6
     if (auto ipv6Header = dynamicPtrCast<const Ipv6Header>(networkHeader)) {
         const Ipv6HopByHopOptionsHeader *hdr = check_and_cast_nullable<const Ipv6HopByHopOptionsHeader *>(ipv6Header->findExtensionHeaderByType(IP_PROT_IPv6EXT_HOP));
         if (hdr != nullptr) {
@@ -685,7 +685,7 @@ const GpsrOption *Gpsr::findGpsrOptionInNetworkDatagram(const Ptr<const NetworkH
     }
     else
 #endif
-#ifdef WITH_NEXTHOP
+#ifdef INET_WITH_NEXTHOP
     if (auto nextHopHeader = dynamicPtrCast<const NextHopForwardingHeader>(networkHeader)) {
         int i = (nextHopHeader->getTlvOptions().findByType(NEXTHOP_TLVOPTION_TLV_GPSR));
         if (i >= 0)
@@ -702,13 +702,13 @@ GpsrOption *Gpsr::findGpsrOptionInNetworkDatagramForUpdate(const Ptr<NetworkHead
 {
     GpsrOption *gpsrOption = nullptr;
 
-#ifdef WITH_IPv4
+#ifdef INET_WITH_IPv4
     if (auto ipv4Header = dynamicPtrCast<Ipv4Header>(networkHeader)) {
         gpsrOption = check_and_cast_nullable<GpsrOption *>(ipv4Header->findMutableOptionByType(IPOPTION_TLV_GPSR));
     }
     else
 #endif
-#ifdef WITH_IPv6
+#ifdef INET_WITH_IPv6
     if (auto ipv6Header = dynamicPtrCast<Ipv6Header>(networkHeader)) {
         Ipv6HopByHopOptionsHeader *hdr = check_and_cast_nullable<Ipv6HopByHopOptionsHeader *>(ipv6Header->findExtensionHeaderByTypeForUpdate(IP_PROT_IPv6EXT_HOP));
         if (hdr != nullptr) {
@@ -719,7 +719,7 @@ GpsrOption *Gpsr::findGpsrOptionInNetworkDatagramForUpdate(const Ptr<NetworkHead
     }
     else
 #endif
-#ifdef WITH_NEXTHOP
+#ifdef INET_WITH_NEXTHOP
     if (auto nextHopHeader = dynamicPtrCast<NextHopForwardingHeader>(networkHeader)) {
         int i = (nextHopHeader->getTlvOptions().findByType(NEXTHOP_TLVOPTION_TLV_GPSR));
         if (i >= 0)

@@ -21,9 +21,9 @@
 #include "inet/common/OsgScene.h"
 #include "inet/common/OsgUtils.h"
 
-#ifdef WITH_RADIO
+#ifdef INET_WITH_RADIO
 #include "inet/physicallayer/wireless/common/pathloss/FreeSpacePathLoss.h"
-#endif // WITH_RADIO
+#endif // INET_WITH_RADIO
 
 #ifdef WITH_OSG
 #include <osg/Depth>
@@ -43,7 +43,7 @@ namespace visualizer {
 
 Define_Module(MediumOsgVisualizer);
 
-#ifdef WITH_RADIO
+#ifdef INET_WITH_RADIO
 #ifdef WITH_OSG
 
 using namespace physicallayer;
@@ -500,7 +500,7 @@ void MediumOsgVisualizer::handleSignalArrivalEnded(const IReception *reception)
 }
 
 #endif // ifdef WITH_OSG
-#endif // ifdef WITH_RADIO
+#endif // ifdef INET_WITH_RADIO
 
 } // namespace visualizer
 
