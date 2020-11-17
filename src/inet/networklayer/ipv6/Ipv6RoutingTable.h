@@ -220,7 +220,7 @@ class INET_API Ipv6RoutingTable : public cSimpleModule, public IRoutingTable, pr
      */
     virtual bool isPrefixPresent(const Ipv6Address& prefix) const;
 
-    // TBD multicast delivery
+    // TODO multicast delivery
     //@}
 
     /** @name Managing the destination cache */
