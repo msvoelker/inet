@@ -711,7 +711,7 @@ class INET_API Interpolated1DFunction : public FunctionBase<R, Domain<X>>
         auto it = rs.equal_range(x);
         auto& lt = it.first;
         auto& ut = it.second;
-        // TODO: this nested if looks horrible
+        // TODO this nested if looks horrible
         if (lt != rs.end() && lt->first == x) {
             if (ut == rs.end())
                 return lt->second.first;
@@ -814,7 +814,7 @@ void simplifyAndCall(const typename D::I& i, const BilinearFunction<R, D> *f, co
         ConstantFunction<R, D> g(f->getRLowerLower());
         callback(i, &g);
     }
-    // TODO: simplify to one dimensional linear functions?
+    // TODO simplify to one dimensional linear functions?
     else
         callback(i, f);
 }

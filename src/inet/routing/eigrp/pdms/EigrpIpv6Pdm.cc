@@ -1342,7 +1342,7 @@ void EigrpIpv6Pdm::addRoutesToMsg(const Ptr<EigrpIpv6Message>& msg, const EigrpM
         else if (this->eigrpStub.staticRt && src->isRedistributed())
             return false;
 
-        // TODO: leakMapRt
+        // TODO leakMapRt
 
         return true;
     }
