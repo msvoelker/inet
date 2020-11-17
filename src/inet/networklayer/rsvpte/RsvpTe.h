@@ -96,7 +96,7 @@ class INET_API RsvpTe : public RoutingProtocolBase, public IScriptable
         // PSB unique identifier
         int id;
 
-        // XXX nam colors
+        // TODO nam colors
         int color;
 
         // timer/timeout routines
