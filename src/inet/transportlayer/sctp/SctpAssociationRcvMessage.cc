@@ -347,6 +347,9 @@ bool SctpAssociation::process_RCV_Message(SctpHeader *sctpmsg,
                 auto heartbeatAckChunk = check_and_cast<SctpHeartbeatAckChunk *>(header);
                 if (path) {
                     processHeartbeatAckArrived(heartbeatAckChunk, path);
+                    if (heartbeatAckChunk->getSctpPacketSize() > 0) {
+                        processDplpmtudProbeAckArrived(heartbeatAckChunk, path);
+                    }
                 }
                 trans = true;
 //                delete heartbeatAckChunk;
@@ -1831,6 +1834,9 @@ void SctpAssociation::handleChunkReportedAsMissing(const SctpSackChunk *sackChun
                         if (myChunk->countsAsOutstanding) {
                             decreaseOutstandingBytes(myChunk);
                         }
+                        if (myChunkLastPath->pmtuValidator != nullptr) {
+                            myChunkLastPath->pmtuValidator->onChunkLost(myChunk->tsn);
+                        }
                         if (!transmissionQ->checkAndInsertChunk(myChunk->tsn, myChunk)) {
                             EV_DETAIL << "Fast RTX: cannot add message/chunk (TSN="
                                       << myChunk->tsn << ") to the transmissionQ" << endl;
@@ -1943,6 +1949,10 @@ void SctpAssociation::nonRenegablyAckChunk(SctpDataVariables *chunk,
     // The chunk still has to be remembered as acknowledged!
     ackChunk(chunk, sackPath);
 
+    if (lastPath->pmtuValidator != nullptr) {
+        lastPath->pmtuValidator->onChunkAcked(chunk->tsn);
+    }
+
     // ====== Remove chunk from transmission queue ===========================
     // Dequeue chunk, cause it has been acked
     if (transmissionQ->getChunk(chunk->tsn)) {
@@ -1965,6 +1975,8 @@ void SctpAssociation::nonRenegablyAckChunk(SctpDataVariables *chunk,
 void SctpAssociation::renegablyAckChunk(SctpDataVariables *chunk,
         SctpPathVariables *sackPath)
 {
+    SctpPathVariables *lastPath = chunk->getLastDestinationPath();
+    assert(lastPath != nullptr);
     // ====== Bookkeeping ====================================================
     if (chunk->countsAsOutstanding) {
         decreaseOutstandingBytes(chunk);
@@ -1979,13 +1991,17 @@ void SctpAssociation::renegablyAckChunk(SctpDataVariables *chunk,
             chunk->hasBeenCountedAsNewlyAcked = true;
             // The chunk has not been acked before.
             // Therefore, its size may *once* be counted as newly acked.
-            chunk->getLastDestinationPath()->newlyAckedBytes += chunk->booksize;
+            lastPath->newlyAckedBytes += chunk->booksize;
         }
     }
 
     // ====== Acknowledge chunk =============================================
     ackChunk(chunk, sackPath);
     chunk->gapReports = 0;
+
+    if (lastPath->pmtuValidator != nullptr) {
+        lastPath->pmtuValidator->onChunkAcked(chunk->tsn);
+    }
 
     // ====== Remove chunk from transmission queue ===========================
     if (transmissionQ->getChunk(chunk->tsn)) { // I.R. 02.01.2007
@@ -2318,6 +2334,17 @@ SctpEventCode SctpAssociation::processHeartbeatAckArrived(SctpHeartbeatAckChunk 
     EV_INFO << "Received HB ACK chunk...resetting error counters on path " << addr
             << ", rttEstimation=" << rttEstimation << endl;
     path->pathErrorCount = 0;
+    return SCTP_E_IGNORE;
+}
+
+SctpEventCode SctpAssociation::processDplpmtudProbeAckArrived(SctpHeartbeatAckChunk *hback,
+        SctpPathVariables *path)
+{
+    if (path->dplpmtud == nullptr) {
+        return SCTP_E_IGNORE;
+    }
+
+    path->dplpmtud->onProbePacketAcked(hback->getSctpPacketSize());
     return SCTP_E_IGNORE;
 }
 
@@ -3800,6 +3827,10 @@ void SctpAssociation::process_TIMEOUT_RTX(SctpPathVariables *path)
         }
     }
     EV_DEBUG << "----------------------" << endl;
+
+    if (path->pmtuValidator != nullptr) {
+        path->pmtuValidator->onRtxTimeout();
+    }
 
     // ====== Update congestion window =======================================
     (this->*ccFunctions.ccUpdateAfterRtxTimeout)(path);

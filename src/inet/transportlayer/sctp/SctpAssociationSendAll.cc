@@ -865,6 +865,9 @@ void SctpAssociation::sendOnPath(SctpPathVariables *pathId, bool firstPass)
                 if (bytesToSend == 0) {
                     Packet *pkt = new Packet("DATA");
                     sendToIP(pkt, sctpMsg, path->remoteAddress);
+                    if (path->pmtuValidator != nullptr) {
+                        path->pmtuValidator->onDataPacketSent(sctpMsg);
+                    }
                     sctpMsg = nullptr;
                     forwardPresent = false;
                     headerCreated = false;
@@ -965,12 +968,14 @@ void SctpAssociation::sendOnPath(SctpPathVariables *pathId, bool firstPass)
                     // If bytes.packet is true, one packet is allowed to be retransmitted!
                     datVar = getOutboundDataChunk(path,
                                 path->pmtu - B(sctpMsg->getChunkLength()).get() - 20,
-                                (bytes.packet == true) ? path->pmtu : allowance);
+                                (bytes.packet || (allowance > 0)),
+                                (B(sctpMsg->getChunkLength()).get() == SCTP_COMMON_HEADER));
                     if (datVar == nullptr) {
                         if (chunksAdded == 1 && sackAdded) {
                             datVar = getOutboundDataChunk(path,
                                         path->pmtu - B(sctpMsg->getChunkLength()).get() + sackChunk->getByteLength() - 20,
-                                        (bytes.packet == true) ? path->pmtu : allowance);
+                                        (bytes.packet || (allowance > 0)),
+                                        false);
                             if (!sackOnly) {
                                 auto x = sctpMsg->removeFirstChunk();
                                 ASSERT(x == sackChunk);
@@ -1432,6 +1437,9 @@ void SctpAssociation::sendOnPath(SctpPathVariables *pathId, bool firstPass)
                         EV_DETAIL << assocId << ":sendToIP: packet size=" << B(sctpMsg->getChunkLength()).get() << " numChunks=" << sctpMsg->getSctpChunksArraySize() << "\n";
                         Packet *pkt = new Packet("DATA");
                         sendToIP(pkt, sctpMsg, path->remoteAddress);
+                        if (path->pmtuValidator != nullptr) {
+                            path->pmtuValidator->onDataPacketSent(sctpMsg);
+                        }
                         sctpMsg = nullptr;
                         pmDataIsSentOn(path);
                         totalPacketsSent++;
@@ -1459,6 +1467,9 @@ void SctpAssociation::sendOnPath(SctpPathVariables *pathId, bool firstPass)
             else if (headerCreated && state->bundleReset) {
                 Packet *pkt = new Packet("DATA");
                 sendToIP(pkt, sctpMsg, path->remoteAddress);
+                if (path->pmtuValidator != nullptr) {
+                    path->pmtuValidator->onDataPacketSent(sctpMsg);
+                }
                 sctpMsg = nullptr;
                 return;
             }

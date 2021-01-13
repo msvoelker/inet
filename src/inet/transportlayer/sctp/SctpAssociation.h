@@ -38,6 +38,8 @@
 #include "inet/transportlayer/sctp/SctpQueue.h"
 #include "inet/transportlayer/sctp/SctpReceiveStream.h"
 #include "inet/transportlayer/sctp/SctpSendStream.h"
+#include "dplpmtud/Dplpmtud.h"
+#include "PmtuValidator.h"
 
 namespace inet {
 
@@ -51,6 +53,8 @@ class SctpReceiveStream;
 class SctpSendStream;
 class SctpAlgorithm;
 class Sctp;
+class Dplpmtud;
+class PmtuValidator;
 
 typedef std::vector<L3Address> AddressVector;
 
@@ -128,6 +132,7 @@ enum SCTPChunkTypes {
     ASCONF_ACK        = 128,
     PKTDROP           = 129,
     RE_CONFIG         = 130,
+    PAD               = 0x84,
     FORWARD_TSN       = 192,
     ASCONF            = 193,
     IFORWARD_TSN      = 194
@@ -377,6 +382,9 @@ class INET_API SctpPathVariables : public cObject
     simtime_t pathRto;
     simtime_t srtt;
     simtime_t rttvar;
+
+    PmtuValidator *pmtuValidator;
+    Dplpmtud *dplpmtud;
 
     // ====== Path Statistics =============================================
     unsigned int gapAckedChunksInLastSACK; // Per-path GapAck'ed chunks in last SACK (R+NR)
@@ -856,6 +864,7 @@ class INET_API SctpStateVariables : public cObject
     std::map<uint16_t, uint32_t> ssPriorityMap;
     std::map<uint16_t, int32_t> ssFairBandwidthMap;
     std::map<uint16_t, int32_t> ssStreamToPathMap;
+    bool useDplpmtud;
 
   private:
     SctpPathVariables *primaryPath;
@@ -865,6 +874,7 @@ class INET_API SctpAssociation : public cObject
 {
     friend class Sctp;
     friend class SctpPathVariables;
+    friend class Dplpmtud;
 
     // map for storing the path parameters
     typedef std::map<L3Address, SctpPathVariables *> SctpPathMap;
@@ -1050,6 +1060,7 @@ class INET_API SctpAssociation : public cObject
      * connection structure must be deleted by the caller (SCTP).
      */
     bool processAppCommand(cMessage *msg, SctpCommandReq *sctpCommand);
+    bool processIcmpPtb(SctpHeader *sctpmsg, const L3Address& remoteAddr, int ptbMtu);
     void removePath();
     void removePath(const L3Address& addr);
     void deleteStreams();
@@ -1130,6 +1141,7 @@ class INET_API SctpAssociation : public cObject
     SctpEventCode processDataArrived(SctpDataChunk *dataChunk);
     SctpEventCode processSackArrived(SctpSackChunk *sackChunk);
     SctpEventCode processHeartbeatAckArrived(SctpHeartbeatAckChunk *heartbeatack, SctpPathVariables *path);
+    SctpEventCode processDplpmtudProbeAckArrived(SctpHeartbeatAckChunk *heartbeatack, SctpPathVariables *path);
     SctpEventCode processForwardTsnArrived(SctpForwardTsnChunk *forChunk);
     bool processPacketDropArrived(SctpPacketDropChunk *pktdrop);
     void processErrorArrived(SctpErrorChunk *error);
@@ -1175,6 +1187,7 @@ class INET_API SctpAssociation : public cObject
     void sendShutdown();
     void sendShutdownAck(const L3Address& dest);
     void sendShutdownComplete();
+    void sendDplpmtudProbe(const SctpPathVariables *path, int sctpPacketSize);
     SctpSackChunk *createSack();
     /** Retransmitting chunks */
     void retransmitInit();
@@ -1271,6 +1284,8 @@ class INET_API SctpAssociation : public cObject
             SctpPathVariables *sackPath);
     void advancePeerTsn();
 
+    void setPmtu(SctpPathVariables *path, uint32_t pmtu);
+
     void cucProcessGapReports(const SctpDataVariables *chunk,
             SctpPathVariables *path,
             const bool isAcked); // CMT-SCTP
@@ -1322,7 +1337,8 @@ class INET_API SctpAssociation : public cObject
     SctpDataVariables *peekAbandonedChunk(const SctpPathVariables *path);
     SctpDataVariables *getOutboundDataChunk(const SctpPathVariables *path,
             int32_t availableSpace,
-            int32_t availableCwnd);
+            bool cwndAllows,
+            bool maxSpace);
     void fragmentOutboundDataMsgs();
     SctpDataMsg *dequeueOutboundDataMsg(SctpPathVariables *path,
             int32_t availableSpace,

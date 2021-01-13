@@ -33,6 +33,7 @@
 #include "inet/networklayer/contract/IL3AddressType.h"
 #include "inet/networklayer/ipv4/Ipv4RoutingTable.h"
 #include "inet/networklayer/ipv6/Ipv6RoutingTable.h"
+#include "inet/networklayer/common/FragmentationTag_m.h"
 
 #ifdef INET_WITH_IPv4
 #include "inet/networklayer/ipv4/Ipv4InterfaceData.h"
@@ -421,6 +422,16 @@ void SctpAssociation::sendToIP(Packet *pkt, const Ptr<SctpHeader>& sctpmsg,
 //    addresses->setSrcAddress(localAddr);
     addresses->setDestAddress(dest);
     pkt->addTagIfAbsent<SocketReq>()->setSocketId(assocId);
+
+    // always set Don't Fragment flag, except when we need to send a DATA packet larger than the PMTU
+    if ((sctpmsg->getHeaderLength()+20) <= getPath(dest)->pmtu
+        || sctpmsg->getSctpChunks(0)->getSctpChunkType() != SCTPChunkTypes::DATA)
+    {
+        pkt->addTag<FragmentationReq>()->setDontFragment(true);
+    } else {
+        EV_WARN << "Data packet length exceeds PMTU, rely on IP fragmentation" << endl;
+    }
+
     EV_INFO << "send packet " << pkt << " to ipOut\n";
     check_and_cast<Sctp *>(getSimulation()->getContextModule())->send(pkt, "ipOut");
 
@@ -1070,6 +1081,7 @@ void SctpAssociation::sendHeartbeatAck(const SctpHeartbeatChunk *heartbeatChunk,
     heartbeatAckChunk->setSctpChunkType(HEARTBEAT_ACK);
     heartbeatAckChunk->setRemoteAddr(heartbeatChunk->getRemoteAddr());
     heartbeatAckChunk->setTimeField(heartbeatChunk->getTimeField());
+    heartbeatAckChunk->setSctpPacketSize(heartbeatChunk->getSctpPacketSize());
     const int32_t len = heartbeatChunk->getInfoArraySize();
     if (len > 0) {
         heartbeatAckChunk->setInfoArraySize(len);
@@ -1249,6 +1261,36 @@ void SctpAssociation::retransmitShutdownAck()
 
     Packet *fp = new Packet("SHUTDOWN-ACK RTX");
     sendToIP(fp, sctpmsg);
+}
+
+void SctpAssociation::sendDplpmtudProbe(const SctpPathVariables *path, int sctpPacketSize)
+{
+    const auto& probePacket = makeShared<SctpHeader>();
+    probePacket->setChunkLength(B(SCTP_COMMON_HEADER));
+    probePacket->setSrcPort(localPort);
+    probePacket->setDestPort(remotePort);
+
+    SctpHeartbeatChunk *heartbeatChunk = new SctpHeartbeatChunk();
+    heartbeatChunk->setSctpChunkType(HEARTBEAT);
+    heartbeatChunk->setRemoteAddr(path->remoteAddress);
+    heartbeatChunk->setTimeField(simTime());
+    heartbeatChunk->setSctpPacketSize(sctpPacketSize);
+
+    heartbeatChunk->setByteLength(SCTP_HEARTBEAT_CHUNK_LENGTH + 12);
+    probePacket->insertSctpChunks(heartbeatChunk);
+
+    int padLength = sctpPacketSize - SCTP_COMMON_HEADER - heartbeatChunk->getByteLength();
+    ASSERT(padLength >= 4);
+
+    SctpPadChunk *padChunk = new SctpPadChunk();
+    padChunk->setSctpChunkType(SCTPChunkTypes::PAD);
+    padChunk->setLength(padLength);
+    padChunk->setByteLength(padLength);
+    probePacket->insertSctpChunks(padChunk);
+
+    EV_INFO << "sendDplpmtudProbe: sendToIP to " << path->remoteAddress << endl;
+    Packet *fp = new Packet("DPLPMTUD-PROBE");
+    sendToIP(fp, probePacket, path->remoteAddress);
 }
 
 void SctpAssociation::sendPacketDrop(const bool flag)
@@ -2312,12 +2354,13 @@ void SctpAssociation::advancePeerTsn()
 
 SctpDataVariables *SctpAssociation::getOutboundDataChunk(const SctpPathVariables *path,
         int32_t availableSpace,
-        int32_t availableCwnd)
+        bool cwndAllows,
+        bool maxSpace)
 {
     /* are there chunks in the transmission queue ? If Yes -> dequeue and return it */
     EV_INFO << "getOutboundDataChunk(" << path->remoteAddress << "):"
             << " availableSpace=" << availableSpace
-            << " availableCwnd=" << availableCwnd
+            << " cwndAllows=" << cwndAllows
             << endl;
     if (!transmissionQ->payloadQueue.empty()) {
         for (auto it = transmissionQ->payloadQueue.begin();
@@ -2329,9 +2372,10 @@ SctpDataVariables *SctpAssociation::getOutboundDataChunk(const SctpPathVariables
             {
                 const int32_t len = ADD_PADDING(chunk->len / 8 + SCTP_DATA_CHUNK_LENGTH);
                 EV_DETAIL << "getOutboundDataChunk() found chunk " << chunk->tsn
-                          << " in the transmission queue, length=" << len << endl;
-                if ((len <= availableSpace) &&
-                    ((int32_t)chunk->booksize <= availableCwnd))
+                          << " in the transmission queue, length=" << len << ", booksize=" << chunk->booksize << endl;
+                // if maxSpace==true, this is the maximum space we can get
+                // we have to rely on IP fragmentation if the chunk is too large
+                if ((maxSpace || (len <= availableSpace)) && cwndAllows)
                 {
                     // T.D. 05.01.2010: The bookkeeping counters may only be decreased when
                     // this chunk is actually dequeued. Therefore, the check
@@ -2411,6 +2455,9 @@ SctpDataVariables *SctpAssociation::peekAbandonedChunk(const SctpPathVariables *
                                               << " sendTime=" << chunk->sendTime << ")" << endl;
                                     chunk->hasBeenAbandoned = true;
                                     sendIndicationToApp(SCTP_I_ABANDONED);
+                                    if (path->pmtuValidator != nullptr) {
+                                        path->pmtuValidator->onChunkAbandoned(chunk->tsn);
+                                    }
                                 }
                             }
                             break;
@@ -2422,6 +2469,9 @@ SctpDataVariables *SctpAssociation::peekAbandonedChunk(const SctpPathVariables *
                                               << " (maxRetransmissions=" << chunk->allowedNoRetransmissions << ")" << endl;
                                     chunk->hasBeenAbandoned = true;
                                     sendIndicationToApp(SCTP_I_ABANDONED);
+                                    if (path->pmtuValidator != nullptr) {
+                                        path->pmtuValidator->onChunkAbandoned(chunk->tsn);
+                                    }
                                 }
                             }
                             break;
@@ -2770,14 +2820,22 @@ void SctpAssociation::pmStartPathManagement()
         path = elem.second;
         path->pathErrorCount = 0;
         rtie = rt->getOutputInterfaceForDestination(path->remoteAddress);
-        path->pmtu = rtie->getMtu();
+        if (state->useDplpmtud) {
+            path->pmtuValidator = new PmtuValidator(path);
+            path->dplpmtud = new Dplpmtud(this, path, rtie->getMtu());
+            path->dplpmtud->start();
+        } else {
+            path->pmtuValidator = nullptr;
+            path->dplpmtud = nullptr;
+            path->pmtu = rtie->getMtu();
+            if (path->pmtu < state->assocPmtu) {
+                state->assocPmtu = path->pmtu;
+            }
+            if (state->fragPoint > path->pmtu - IP_HEADER_LENGTH - SCTP_COMMON_HEADER - SCTP_DATA_CHUNK_LENGTH) {
+                state->fragPoint = path->pmtu - IP_HEADER_LENGTH - SCTP_COMMON_HEADER - SCTP_DATA_CHUNK_LENGTH;
+            }
+        }
         EV_DETAIL << "Path MTU of Interface " << i << " = " << path->pmtu << "\n";
-        if (path->pmtu < state->assocPmtu) {
-            state->assocPmtu = path->pmtu;
-        }
-        if (state->fragPoint > path->pmtu - IP_HEADER_LENGTH - SCTP_COMMON_HEADER - SCTP_DATA_CHUNK_LENGTH) {
-            state->fragPoint = path->pmtu - IP_HEADER_LENGTH - SCTP_COMMON_HEADER - SCTP_DATA_CHUNK_LENGTH;
-        }
         initCcParameters(path);
         path->pathRto = sctpMain->getRtoInitial();
         path->srtt = path->pathRto;
@@ -2806,6 +2864,20 @@ void SctpAssociation::pmStartPathManagement()
         path->statisticsPathRTO->record(path->pathRto);
         i++;
     }
+}
+
+void SctpAssociation::setPmtu(SctpPathVariables *path, uint32_t pmtu)
+{
+    path->pmtu = pmtu;
+    int smallestPmtu = pmtu;
+    for (auto& elem : sctpPathMap) {
+        SctpPathVariables *otherPath = elem.second;
+        if (otherPath->pmtu < smallestPmtu) {
+            smallestPmtu = otherPath->pmtu;
+        }
+    }
+    state->assocPmtu = smallestPmtu;
+    state->fragPoint = smallestPmtu- IP_HEADER_LENGTH - SCTP_COMMON_HEADER - SCTP_DATA_CHUNK_LENGTH;
 }
 
 int32_t SctpAssociation::getOutstandingBytes() const

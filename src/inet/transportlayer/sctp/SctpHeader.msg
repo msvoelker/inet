@@ -206,6 +206,7 @@ class SctpHeartbeatChunk extends SctpChunk
 {
     L3Address remoteAddr;
     simtime_t timeField;
+    int sctpPacketSize = 0;
     char info[];
 }
 
@@ -213,6 +214,7 @@ class SctpHeartbeatAckChunk extends SctpChunk
 {
     L3Address remoteAddr;
     simtime_t timeField;
+    int sctpPacketSize = 0;
     char info[];
 }
 
@@ -236,6 +238,12 @@ class SctpErrorChunk extends SctpChunk
     bool TBit = 0;
     bool MBit = 0;
     abstract SctpParameter *parameters[];
+}
+
+class SctpPadChunk extends SctpChunk
+{
+    flags = 0;
+    char data[];
 }
 
 class SctpParameter extends cPacket

@@ -37,6 +37,7 @@
 
 #ifdef INET_WITH_IPv4
 #include "inet/networklayer/ipv4/Ipv4Header_m.h"
+#include "inet/networklayer/ipv4/IcmpHeader_m.h"
 #endif // ifdef INET_WITH_IPv4
 
 namespace inet {
@@ -254,6 +255,29 @@ void Sctp::handleMessage(cMessage *msg)
                         delete packet;
                     }
                 }
+            }
+        }
+        else if (protocol == &Protocol::icmpv4) {
+            EV_WARN << "ICMPv4 message received from IP" << endl;
+            auto header = packet->popAtFront();
+            Ptr<const IcmpHeader> icmpHeader = dynamicPtrCast<const IcmpHeader>(header);
+            if (icmpHeader != nullptr) {
+                if (icmpHeader->getType() == ICMP_DESTINATION_UNREACHABLE && icmpHeader->getCode() == ICMP_DU_FRAGMENTATION_NEEDED) {
+                    // Packet Too Big (PTB) message received
+                    Ptr<const IcmpPtb> icmpPtb = dynamicPtrCast<const IcmpPtb>(icmpHeader);
+                    Ptr<const Ipv4Header> ipHeader = dynamicPtrCast<const Ipv4Header>(packet->popAtFront());
+                    SctpHeader *sctpmsg = (packet->peekAtFront<SctpHeader>(b(-1), Chunk::PeekFlag::PF_ALLOW_INCOMPLETE).get()->dup());
+                    SctpAssociation *assoc = findAssocForMessage(ipHeader->getDestAddress(), ipHeader->getSrcAddress(), sctpmsg->getDestPort(), sctpmsg->getSrcPort(), false);
+                    if (assoc) {
+                        assoc->processIcmpPtb(sctpmsg, ipHeader->getDestAddress(), icmpPtb->getMtu());
+                    } else {
+                        EV_WARN << "Could not find assoc for a ICMP PTB" << endl;
+                    }
+                } else {
+                    EV_WARN << "ICMP types other than PTB not handled" << endl;
+                }
+            } else {
+                EV_WARN << "ICMPv6 not handled" << endl;
             }
         }
         else {

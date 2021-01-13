@@ -262,6 +262,13 @@ SctpPathVariables::~SctpPathVariables()
     delete vectorPathPseudoCumAck;
     delete vectorPathRTXPseudoCumAck;
     delete vectorPathBlockingTsnsMoved;
+
+    if (pmtuValidator != nullptr) {
+        delete pmtuValidator;
+    }
+    if (dplpmtud != nullptr) {
+        delete dplpmtud;
+    }
 }
 
 const L3Address SctpDataVariables::zeroAddress = L3Address();
@@ -949,6 +956,12 @@ bool SctpAssociation::processTimer(cMessage *msg)
     else if (path != nullptr && msg == path->AsconfTimer) {
         process_TIMEOUT_ASCONF(path);
     }
+    else if (path != nullptr && path->dplpmtud != nullptr && msg == path->dplpmtud->raiseTimer) {
+        path->dplpmtud->onRaiseTimeout();
+    }
+    else if (path != nullptr && path->dplpmtud != nullptr && msg == path->dplpmtud->probeTimer) {
+        path->dplpmtud->onProbeTimeout(msg);
+    }
     else if (msg == StartAddIP) {
         state->corrIdNum = state->asconfSn;
         const char *type = sctpMain->par("addIpType").stringValue();
@@ -1004,6 +1017,19 @@ bool SctpAssociation::processSctpMessage(SctpHeader *sctpmsg,
     }
 
     return process_RCV_Message(sctpmsg, msgSrcAddr, msgDestAddr);
+}
+
+bool SctpAssociation::processIcmpPtb(SctpHeader *sctpmsg, const L3Address& remoteAddr, int ptbMtu)
+{
+    SctpPathVariables *path = getPath(remoteAddr);
+    if (!path) {
+        EV_WARN << "Could not find path for PTB message" << endl;
+        return false;
+    }
+    if (path->dplpmtud != nullptr) {
+        path->dplpmtud->onPtbReceived(sctpmsg->getHeaderLength(), ptbMtu);
+    }
+    return true;
 }
 
 SctpEventCode SctpAssociation::preanalyseAppCommandEvent(int32_t commandCode)
@@ -1688,6 +1714,7 @@ void SctpAssociation::stateEntered(int32_t status)
             state->bytesToAddPerPeerChunk = sctpMain->par("bytesToAddPerPeerChunk");
             state->tellArwnd = sctpMain->par("tellArwnd");
             state->throughputInterval = sctpMain->par("throughputInterval");
+            state->useDplpmtud = sctpMain->par("useDplpmtud");
             sackPeriod = sctpMain->getSackPeriod();
             sackFrequency = sctpMain->getSackFrequency();
             Sctp::AssocStat stat;
@@ -1790,8 +1817,13 @@ void SctpAssociation::stateEntered(int32_t status)
         }
 
         case SCTP_S_SHUTDOWN_PENDING: {
-            if (getOutstandingBytes() == 0 && transmissionQ->getQueueSize() == 0 && qCounter.roomSumSendStreams == 0)
+            EV_INFO << "Entered state SCTP_S_SHUTDOWN_PENDING, osb=" << getOutstandingBytes()
+                    << ", transQ=" << transmissionQ->getQueueSize()
+                    << ", scount=" << qCounter.roomSumSendStreams << endl;
+
+            if (getOutstandingBytes() == 0 && transmissionQ->getQueueSize() == 0 && qCounter.roomSumSendStreams == 0) {
                 sendShutdown();
+            }
             break;
         }
 
@@ -1805,6 +1837,23 @@ void SctpAssociation::stateEntered(int32_t status)
             }
             else {
                 sendOnAllPaths(state->getPrimaryPath());
+            }
+            break;
+        }
+
+        case SCTP_S_SHUTDOWN_SENT:
+        case SCTP_S_SHUTDOWN_ACK_SENT: {
+            // Stop DPLPMTUD and PmtuValidator by deleting them for each path
+            for (auto& elem : sctpPathMap) {
+                SctpPathVariables *path = elem.second;
+                if (path->dplpmtud != nullptr) {
+                    delete path->dplpmtud;
+                    path->dplpmtud = nullptr;
+                }
+                if (path->pmtuValidator != nullptr) {
+                    delete path->pmtuValidator;
+                    path->pmtuValidator = nullptr;
+                }
             }
             break;
         }

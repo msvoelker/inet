@@ -49,6 +49,9 @@ simple Sctp like ISctp
         bool reactivatePrimaryPath = default(false);
         int sendQueueLimit = default(0);
         double validCookieLifetime @unit(s) = default(10s);
+        bool useDplpmtud = default(false); // if true, uses DPLPMTUD (RFC8899) to determine the PMTU
+        bool dplpmtudUsePtb = default(true); // if true, uses ICMP Packet Too Big (PTB) messages for DPLPMTUD
+        string dplpmtudSearchAlgorithm = default("Up"); // Specifies the search algorithm for DPLPMTUD (Up, Down, OptUp, Binary, Jump)
 
         //#====== Testing =====================================================
 
