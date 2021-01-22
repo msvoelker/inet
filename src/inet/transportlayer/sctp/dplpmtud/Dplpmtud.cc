@@ -37,6 +37,14 @@ Dplpmtud::Dplpmtud(SctpAssociation *assoc, SctpPathVariables *path, int mtu) { /
     state = nullptr;
     raiseTimer = nullptr;
     probeTimer = nullptr;
+
+    numberOfTestsStat = 0;
+    lastSearchTimeStat = SimTime::ZERO;
+    networkLoadStat = 0;
+
+    char str[128];
+    snprintf(str, sizeof(str), "DPLPMTUD: PMTU %d:%s", assoc->assocId, path->remoteAddress.str().c_str());
+    pmtuStat = new cOutVector(str);
 }
 
 Dplpmtud::~Dplpmtud() {
@@ -51,6 +59,15 @@ Dplpmtud::~Dplpmtud() {
         stopTimer(raiseTimer);
         delete raiseTimer;
     }
+
+    char str[128];
+    snprintf(str, sizeof(str), "DPLPMTUD: Number of Tests %d:%s", assoc->assocId, path->remoteAddress.str().c_str());
+    assoc->sctpMain->recordScalar(str, numberOfTestsStat);
+    snprintf(str, sizeof(str), "DPLPMTUD: Last Search Time %d:%s", assoc->assocId, path->remoteAddress.str().c_str());
+    assoc->sctpMain->recordScalar(str, lastSearchTimeStat);
+    snprintf(str, sizeof(str), "DPLPMTUD: Network Load %d:%s", assoc->assocId, path->remoteAddress.str().c_str());
+    assoc->sctpMain->recordScalar(str, networkLoadStat);
+    delete pmtuStat;
 }
 
 void Dplpmtud::start() {
@@ -69,7 +86,7 @@ void Dplpmtud::determinePmtuBounds(int mtu) {
 
     L3Address remoteAddr = path->remoteAddress;
     if (remoteAddr.getType() == L3Address::IPv4) {
-        minPmtu = 1200;
+        minPmtu = 1280;
         overhead = 20;
     } else if (remoteAddr.getType() == L3Address::IPv6) {
         minPmtu = 1280;
@@ -94,15 +111,16 @@ int Dplpmtud::getNextLargerPmtu() {
 }
 
 simtime_t Dplpmtud::getRaiseTimeout() {
-    return simTime() + RAISE_TIMEOUT;
+    return RAISE_TIMEOUT;
 }
 
 simtime_t Dplpmtud::getRapidTestTimeout() {
-    return simTime() + path->srtt*2;
+    SimTime rttvar4 = path->rttvar*4;
+    return path->srtt + (rttvar4 > kGranularity ? rttvar4 : kGranularity);
 }
 
 simtime_t Dplpmtud::getProbeTimeout() {
-    return simTime() + PROBE_TIMEOUT;
+    return PROBE_TIMEOUT;
 }
 
 DplpmtudSearchAlgorithm *Dplpmtud::createSearchAlgorithm() {
@@ -160,6 +178,12 @@ void Dplpmtud::onRaiseTimeout() {
 
 void Dplpmtud::sendProbe(int probeSize) {
     assoc->sendDplpmtudProbe(path, probeSize - overhead);
+    networkLoadStat += probeSize;
+    static int lastProbeSize = 0;
+    if (lastProbeSize != probeSize) {
+        numberOfTestsStat++;
+        lastProbeSize = probeSize;
+    }
 }
 
 int Dplpmtud::getPlpmtu() {
@@ -189,7 +213,7 @@ void Dplpmtud::startRaiseTimer() {
         pinfo->setRemoteAddress(path->remoteAddress);
         raiseTimer->setControlInfo(pinfo);
     }
-    assoc->startTimer(raiseTimer, RAISE_TIMEOUT);
+    assoc->startTimer(raiseTimer, getRaiseTimeout());
 }
 
 void Dplpmtud::startProbeTimer(int probeSize, bool rapid) {
@@ -205,9 +229,9 @@ void Dplpmtud::startProbeTimer(int probeSize, bool rapid) {
     }
     probeTimer->setProbeSize(probeSize);
     if (rapid) {
-        assoc->startTimer(probeTimer, path->srtt*2);
+        assoc->startTimer(probeTimer, getRapidTestTimeout());
     } else {
-        assoc->startTimer(probeTimer, PROBE_TIMEOUT);
+        assoc->startTimer(probeTimer, getProbeTimeout());
     }
 }
 
@@ -228,6 +252,7 @@ void Dplpmtud::stopProbeTimer() {
 
 void Dplpmtud::setPmtu(int pmtu) {
     this->pmtu = pmtu;
+    pmtuStat->record(pmtu);
     assoc->setPmtu(path, pmtu);
 }
 

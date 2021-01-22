@@ -32,6 +32,7 @@ void DplpmtudStateSearch::start() {
     algorithm = context->createSearchAlgorithm();
     probedSize = algorithm->getFirstCandidate();
     probeCount = 0;
+    startSearchTime = simTime();
     EV_DEBUG << "DPLPMTUD in SEARCH: start, send probe for " << probedSize << endl;
     sendProbe(probedSize, algorithm->doRapidTest());
 }
@@ -43,6 +44,7 @@ DplpmtudState *DplpmtudStateSearch::onProbeAcked(int ackedProbeSize) {
     EV_DEBUG << "DPLPMTUD in SEARCH: probe for " << ackedProbeSize << "B acked" << endl;
     context->stopProbeTimer();
     context->setPmtu(ackedProbeSize);
+    context->lastSearchTimeStat = simTime() - startSearchTime;
     probedSize = algorithm->getLargerCandidate(ackedProbeSize);
     if (probedSize == 0) { // no more candidates to test
         EV_DEBUG << "DPLPMTUD in SEARCH: no more candidates to test, transition to COMPLETE" << endl;

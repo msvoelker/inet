@@ -36,6 +36,7 @@ public:
 private:
     int probedSize;
     DplpmtudSearchAlgorithm *algorithm;
+    SimTime startSearchTime;
 
     void start();
 };

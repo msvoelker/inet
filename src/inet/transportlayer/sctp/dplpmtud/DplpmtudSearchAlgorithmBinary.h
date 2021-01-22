@@ -32,6 +32,8 @@ public:
     virtual bool doRapidTest() override;
 
 private:
+    bool gotAck;
+
     int calculateNextValue();
 };
 

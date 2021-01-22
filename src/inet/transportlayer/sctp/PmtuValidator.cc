@@ -170,8 +170,12 @@ void PmtuValidator::onPacketLost(SimTime sentTime, int sctpPacketSize)
     }
 }
 
-void PmtuValidator::onRtxTimeout()
+void PmtuValidator::onRtxTimeout(SimTime oldestLostSendTime)
 {
+    if (oldestLostSendTime < timeLastPmtuInvalid) {
+        // the expired rtx timer started for a packet sent before the last time we invalidated the PMTU -> ignore
+        return;
+    }
     EV_DEBUG << "PmtuValidator: PMTU seems invalid due to an expired retransmission timer" << endl;
     pmtuInvalid();
 }

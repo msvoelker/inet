@@ -82,6 +82,7 @@ int DplpmtudSearchAlgorithmJump::getSmallerCandidate(int unackedCandidate) {
     auto smallerIt = it-1;
 
     if (downward) {
+        rapid = smallerIt != candidates.begin();
         return *smallerIt;
     } else {
         if (!rapid) {
@@ -157,7 +158,7 @@ void DplpmtudSearchAlgorithmJump::addCandidates(std::vector<int>::iterator &afte
  */
 bool DplpmtudSearchAlgorithmJump::rapidTest(std::vector<int>::iterator newCandidateIt) {
     if (newCandidateIt == candidates.begin()) {
-        return true;
+        return false;
     }
 
     int candidate = *newCandidateIt;

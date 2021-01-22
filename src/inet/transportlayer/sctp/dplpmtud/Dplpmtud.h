@@ -91,10 +91,16 @@ public:
     cMessage *raiseTimer;
     ProbeTimerMessage *probeTimer;
 
+    unsigned int numberOfTestsStat;
+    SimTime lastSearchTimeStat;
+    unsigned int networkLoadStat;
+    cOutVector *pmtuStat;
+
 private:
     const int step = 4;
     const simtime_t RAISE_TIMEOUT = SimTime(600, SimTimeUnit::SIMTIME_S);
     const simtime_t PROBE_TIMEOUT = SimTime(1, SimTimeUnit::SIMTIME_S);
+    const simtime_t kGranularity = SimTime(1, SimTimeUnit::SIMTIME_MS);
 
     int initialMinPmtu;
     int initialMaxPmtu;

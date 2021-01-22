@@ -3810,10 +3810,14 @@ void SctpAssociation::process_TIMEOUT_RTX(SctpPathVariables *path)
               << " oldest chunk sent " << simTime() - path->oldestChunkSendTime << " ago"
               << " (TSN " << path->oldestChunkTsn << ")" << endl;
     EV_DEBUG << "Unacked chunks in Retransmission Queue:" << endl;
+    simtime_t oldestLostChunkSendTime = simTime();
     for (SctpQueue::PayloadQueue::const_iterator iterator = retransmissionQ->payloadQueue.begin();
          iterator != retransmissionQ->payloadQueue.end(); ++iterator)
     {
         const SctpDataVariables *myChunk = iterator->second;
+        if (myChunk->sendTime < oldestLostChunkSendTime) {
+            oldestLostChunkSendTime = myChunk->sendTime;
+        }
         if (!myChunk->hasBeenAcked) {
             const SctpPathVariables *myChunkLastPath = myChunk->getLastDestinationPath();
             EV_DEBUG << " - " << myChunk->tsn
@@ -3829,7 +3833,7 @@ void SctpAssociation::process_TIMEOUT_RTX(SctpPathVariables *path)
     EV_DEBUG << "----------------------" << endl;
 
     if (path->pmtuValidator != nullptr) {
-        path->pmtuValidator->onRtxTimeout();
+        path->pmtuValidator->onRtxTimeout(oldestLostChunkSendTime);
     }
 
     // ====== Update congestion window =======================================

@@ -18,7 +18,9 @@
 namespace inet {
 namespace sctp {
 
-DplpmtudSearchAlgorithmBinary::DplpmtudSearchAlgorithmBinary(int minPmtu, int maxPmtu, int stepSize) : DplpmtudSearchAlgorithm(minPmtu, maxPmtu, stepSize) { }
+DplpmtudSearchAlgorithmBinary::DplpmtudSearchAlgorithmBinary(int minPmtu, int maxPmtu, int stepSize) : DplpmtudSearchAlgorithm(minPmtu, maxPmtu, stepSize) {
+    gotAck = false;
+}
 DplpmtudSearchAlgorithmBinary::~DplpmtudSearchAlgorithmBinary() { }
 
 int DplpmtudSearchAlgorithmBinary::getFirstCandidate() {
@@ -26,19 +28,20 @@ int DplpmtudSearchAlgorithmBinary::getFirstCandidate() {
 }
 
 int DplpmtudSearchAlgorithmBinary::getLargerCandidate(int ackedCandidate) {
+    gotAck = true;
     minPmtu = ackedCandidate;
-    int next = calculateNextValue();
-    if (next == ackedCandidate) {
+    if (minPmtu == maxPmtu) {
         return 0;
     }
+    int next = calculateNextValue();
     return next;
 }
 
 int DplpmtudSearchAlgorithmBinary::getSmallerCandidate(int unackedCandidate) {
-    if (minPmtu == maxPmtu) {
+    maxPmtu = std::max(unackedCandidate - stepSize, minPmtu);
+    if (minPmtu == maxPmtu && gotAck) {
         return 0;
     }
-    maxPmtu = std::max(unackedCandidate - stepSize, minPmtu);
     int next = calculateNextValue();
     return next;
 }

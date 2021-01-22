@@ -46,7 +46,7 @@ public:
     void onChunkAcked(uint32_t tsn);
     void onChunkLost(uint32_t tsn);
     void onChunkAbandoned(uint32_t tsn);
-    void onRtxTimeout();
+    void onRtxTimeout(SimTime oldestLostSendTime);
 
 private:
     SctpPathVariables *path;
